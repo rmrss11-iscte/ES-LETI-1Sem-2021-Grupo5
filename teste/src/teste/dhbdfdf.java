@@ -7,6 +7,7 @@ public class dhbdfdf {
 		int i;
 		i=10;
 		System.out.print(i);
+		System.out.print("Toma");
 	}
 
 }
