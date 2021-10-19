@@ -1,7 +1,5 @@
 package SE_Grupo5;
 
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import java.awt.Font;
@@ -16,8 +14,10 @@ public class JanelaInicial {
 
 	private JFrame frame;
 	private JTextField rep;
-	private JTextField trello;
+	private JTextField trelloKey;
 	private JButton nextButton;
+	private JTextField trelloToken;
+	private JTextField trelloUser;
 
 	/**
 	 * Create the application.
@@ -31,7 +31,7 @@ public class JanelaInicial {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
+		frame.setBounds(100, 100, 527, 403);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
@@ -49,25 +49,39 @@ public class JanelaInicial {
 		
 		JLabel lblNewLabel_1 = new JLabel("Trello");
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 22));
-		lblNewLabel_1.setBounds(10, 99, 300, 37);
+		lblNewLabel_1.setBounds(10, 136, 300, 37);
 		frame.getContentPane().add(lblNewLabel_1);
 		
-		trello = new JTextField();
-		trello.setFont(new Font("Tahoma", Font.ITALIC, 13));
-		trello.setText("Escreva aqui...");
-		trello.setBounds(20, 147, 404, 29);
-		frame.getContentPane().add(trello);
-		trello.setColumns(10);
+		trelloKey = new JTextField();
+		trelloKey.setFont(new Font("Tahoma", Font.ITALIC, 13));
+		trelloKey.setText("Trello Key");
+		trelloKey.setBounds(20, 224, 404, 29);
+		frame.getContentPane().add(trelloKey);
+		trelloKey.setColumns(10);
 		
 		nextButton = new JButton("Next");
 		nextButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		nextButton.setBounds(323, 221, 101, 29);
+		nextButton.setBounds(400, 324, 101, 29);
 		frame.getContentPane().add(nextButton);
+		
+		trelloToken = new JTextField();
+		trelloToken.setText("Trello Token");
+		trelloToken.setFont(new Font("Tahoma", Font.ITALIC, 13));
+		trelloToken.setColumns(10);
+		trelloToken.setBounds(20, 264, 404, 29);
+		frame.getContentPane().add(trelloToken);
+		
+		trelloUser = new JTextField();
+		trelloUser.setText("Trello Username");
+		trelloUser.setFont(new Font("Tahoma", Font.ITALIC, 13));
+		trelloUser.setColumns(10);
+		trelloUser.setBounds(20, 184, 404, 29);
+		frame.getContentPane().add(trelloUser);
 		nextButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				frame.dispose();
-				//frame.setVisible(false);
+				//frame.dispose();
+				frame.setVisible(false);
 			}
 		});
 	}
@@ -76,8 +90,14 @@ public class JanelaInicial {
 		return rep.getText();
 	}
 	
-	public String getTrello() {
-		return trello.getText();
+	public String getTrelloKey() {
+		return trelloKey.getText();
+	}
+	public String getTrelloToken() {
+		return trelloToken.getText();
+	}
+	public String getTrelloUser() {
+		return trelloUser.getText();
 	}
 	public Window getFrame() {
 		return frame;
