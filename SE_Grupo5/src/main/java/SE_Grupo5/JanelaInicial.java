@@ -2,10 +2,15 @@ package SE_Grupo5;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Window;
 
 import javax.swing.JTextField;
+
+import com.julienvey.trello.Trello;
+
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -82,6 +87,18 @@ public class JanelaInicial {
 			public void mouseClicked(MouseEvent e) {
 				//frame.dispose();
 				frame.setVisible(false);
+				final Trello trelloApi = Conexao.conexaoTrello(getTrelloKey(), getTrelloToken());
+				final String trelloUtilizador = getTrelloUser();
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						try {
+							Informacao i = new Informacao(trelloApi, trelloUtilizador);
+							i.setVisible(true);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				});
 			}
 		});
 	}
