@@ -10,6 +10,8 @@ import com.julienvey.trello.domain.*;
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.util.List;
+import java.awt.Color;
+import javax.swing.JTextArea;
 
 public class Informacao extends JFrame {
 
@@ -20,7 +22,7 @@ public class Informacao extends JFrame {
 	private JPanel contentPane;
 	private Trello trelloApi;
 	private String trelloUtilizador;
-	private String membros = "";
+	private String membersList = "";
 
 	/**
 	 * Create the frame.
@@ -33,19 +35,21 @@ public class Informacao extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1033, 634);
 		contentPane = new JPanel();
+		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblNewLabel = new JLabel("Membros do projeto:");
-		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		lblNewLabel.setBounds(10, 45, 211, 43);
-		contentPane.add(lblNewLabel);
+		JLabel membersLabel = new JLabel("Membros do projeto:");
+		membersLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		membersLabel.setBounds(10, 45, 211, 43);
+		contentPane.add(membersLabel);
 		
-		JLabel lblNewLabel_1 = new JLabel(getMembers());
-		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lblNewLabel_1.setBounds(20, 95, 384, 297);
-		contentPane.add(lblNewLabel_1);
+		JTextArea membersDisplay = new JTextArea(getMembers());
+		membersLabel.setLabelFor(membersDisplay);
+		membersDisplay.setEditable(false);
+		membersDisplay.setBounds(20, 82, 253, 152);
+		contentPane.add(membersDisplay);
 	}
 	
 	private String getMembers() {
@@ -53,16 +57,9 @@ public class Informacao extends JFrame {
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		List<Member> members = trelloApi.getBoardMembers(boards.get(0).getId());
 		for(Member m: members) {
-			System.out.println(membros);
-			membros.concat(m.getFullName()).concat("\n");
-			System.out.print(m.getFullName());
+			membersList = membersList + m.getFullName()+"\n";
 		}
-		System.out.print(membros + "escrevi aqui");
-		return membros;
+		return membersList;
 	}
-	
-	
-	
-	
 }
 	
