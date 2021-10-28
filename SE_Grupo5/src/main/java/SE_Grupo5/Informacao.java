@@ -12,6 +12,7 @@ import java.awt.Font;
 import java.util.List;
 import java.awt.Color;
 import javax.swing.JTextArea;
+import java.util.Date;
 
 public class Informacao extends JFrame {
 
@@ -50,6 +51,16 @@ public class Informacao extends JFrame {
 		membersDisplay.setEditable(false);
 		membersDisplay.setBounds(20, 82, 253, 152);
 		contentPane.add(membersDisplay);
+		
+		JLabel dataLabel = new JLabel("Data de Inicio:");
+		dataLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		dataLabel.setBounds(10, 245, 170, 32);
+		contentPane.add(dataLabel);
+		
+		JLabel dataDisplay = new JLabel(getDate());
+		dataLabel.setLabelFor(dataDisplay);
+		dataDisplay.setBounds(10, 276, 305, 72);
+		contentPane.add(dataDisplay);
 	}
 	
 	private String getMembers() {
@@ -61,5 +72,16 @@ public class Informacao extends JFrame {
 		}
 		return membersList;
 	}
-}
+	
+	private String getDate() {
+		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
+		List<Card> cards = trelloApi.getBoardCards(boards.get(0).getId());
+		Card projectCard = trelloApi.getBoardCard(boards.get(0).getId(), cards.get(0).getId());
+		Date dataInicio = projectCard.getDue();
+		return dataInicio.toString();
+		}
+	}
+	
+	
+
 	
