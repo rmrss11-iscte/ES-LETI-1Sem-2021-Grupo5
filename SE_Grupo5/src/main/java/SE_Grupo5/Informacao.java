@@ -28,10 +28,10 @@ public class Informacao extends JFrame {
 	 * Create the frame.
 	 */
 	public Informacao(Trello trelloApi, String trelloUtilizador) {
-		
+
 		this.trelloApi = trelloApi;
 		this.trelloUtilizador = trelloUtilizador;
-		
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1033, 634);
 		contentPane = new JPanel();
@@ -39,21 +39,42 @@ public class Informacao extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
+
 		JLabel membersLabel = new JLabel("Membros do projeto:");
 		membersLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		membersLabel.setBounds(10, 45, 211, 43);
+		membersLabel.setBounds(20, 88, 211, 43);
 		contentPane.add(membersLabel);
-		
+
 		JTextArea membersDisplay = new JTextArea(getMembers());
 		membersLabel.setLabelFor(membersDisplay);
 		membersDisplay.setEditable(false);
-		membersDisplay.setBounds(20, 82, 253, 152);
+		membersDisplay.setBounds(20, 129, 253, 152);
 		contentPane.add(membersDisplay);
-	}
-	
-	private String getMembers() {
 		
+		JLabel projectName = new JLabel("Nome do Projeto:");
+		projectName.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		projectName.setBounds(20, 11, 187, 37);
+		contentPane.add(projectName);
+		
+		JLabel nameDisplay = new JLabel(getNameofProject());
+		nameDisplay.setFont(new Font("Monospaced", Font.PLAIN, 13));
+		nameDisplay.setBounds(30, 50, 132, 14);
+		contentPane.add(nameDisplay);
+	
+	}
+
+	private String getNameofProject() {
+		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
+		List<Card> cards = trelloApi.getBoardCards(boards.get(0).getId());
+		Card projectcard= trelloApi.getBoardCard(boards.get(0).getId(), cards.get(0).getId());
+
+		String name = projectcard.getName();
+
+		return name;
+	}
+
+	private String getMembers() {
+
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		List<Member> members = trelloApi.getBoardMembers(boards.get(0).getId());
 		for(Member m: members) {
@@ -62,4 +83,3 @@ public class Informacao extends JFrame {
 		return membersList;
 	}
 }
-	
