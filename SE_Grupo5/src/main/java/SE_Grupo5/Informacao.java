@@ -51,33 +51,35 @@ public class Informacao extends JFrame {
 		JTextArea membersDisplay = new JTextArea(getMembers());
 		membersLabel.setLabelFor(membersDisplay);
 		membersDisplay.setEditable(false);
-		membersDisplay.setBounds(20, 129, 253, 127);
+		membersDisplay.setBounds(30, 129, 253, 80);
 		contentPane.add(membersDisplay);
 
 		
 		JLabel dataLabel = new JLabel("Data de Inicio:");
 		dataLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		dataLabel.setBounds(20, 267, 205, 36);
+		dataLabel.setBounds(20, 220, 205, 36);
 		contentPane.add(dataLabel);
 		
 		JLabel dataDisplay = new JLabel(getDate());
+		dataDisplay.setFont(new Font("Monospaced", Font.PLAIN, 13));
+		dataDisplay.setVerticalAlignment(SwingConstants.TOP);
 		dataLabel.setLabelFor(dataDisplay);
-		dataDisplay.setBounds(20, 300, 305, 72);
+		dataDisplay.setBounds(30, 267, 235, 28);
 		contentPane.add(dataDisplay);
 		
 		JLabel productBacklogLabel= new JLabel("Items do ProductBacklog:");
 		productBacklogLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		productBacklogLabel.setBounds(20, 393, 211, 28);
+		productBacklogLabel.setBounds(20, 306, 221, 28);
 		contentPane.add(productBacklogLabel);
 		
 		JTextArea productBacklogDisplay = new JTextArea(getProductBacklog());
 		productBacklogLabel.setLabelFor(productBacklogDisplay);
-		productBacklogDisplay.setBounds(20, 432, 274, 152);
+		productBacklogDisplay.setBounds(30, 345, 274, 152);
 		contentPane.add(productBacklogDisplay);
 	
 		JLabel nameDisplay = new JLabel(getNameofProject());
 		nameDisplay.setHorizontalAlignment(SwingConstants.CENTER);
-		nameDisplay.setFont(new Font("Felix Titling", Font.BOLD, 20));
+		nameDisplay.setFont(new Font("Felix Titling", Font.BOLD, 25));
 		nameDisplay.setBounds(221, 11, 575, 53);
 		contentPane.add(nameDisplay);
 	
