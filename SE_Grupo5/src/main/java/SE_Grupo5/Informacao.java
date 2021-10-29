@@ -24,6 +24,7 @@ public class Informacao extends JFrame {
 	private Trello trelloApi;
 	private String trelloUtilizador;
 	private String membersList = "";
+	private String productBacklogList = "";
 
 	/**
 	 * Create the frame.
@@ -61,6 +62,16 @@ public class Informacao extends JFrame {
 		dataLabel.setLabelFor(dataDisplay);
 		dataDisplay.setBounds(10, 276, 305, 72);
 		contentPane.add(dataDisplay);
+		
+		JLabel productBacklogLabel= new JLabel("Items do ProductBacklog:");
+		productBacklogLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		productBacklogLabel.setBounds(10, 359, 211, 28);
+		contentPane.add(productBacklogLabel);
+		
+		JTextArea productBacklogDisplay = new JTextArea(getProductBacklog());
+		productBacklogLabel.setLabelFor(productBacklogDisplay);
+		productBacklogDisplay.setBounds(10, 398, 274, 152);
+		contentPane.add(productBacklogDisplay);
 	}
 	
 	private String getMembers() {
@@ -80,6 +91,17 @@ public class Informacao extends JFrame {
 		Date dataInicio = projectCard.getDue();
 		return dataInicio.toString();
 		}
+	
+	private String getProductBacklog() {
+		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
+		List<TList> lists = trelloApi.getBoardLists(boards.get(0).getId());	
+		List<Card> listCards = trelloApi.getListCards(lists.get(2).getId());
+		for(Card c: listCards) {
+			productBacklogList = productBacklogList + c.getName()+"\n";
+		}
+		return productBacklogList;
+		
+	}
 	}
 	
 	
