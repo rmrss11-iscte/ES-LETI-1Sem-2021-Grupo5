@@ -12,6 +12,7 @@ import java.awt.Font;
 import java.util.List;
 import java.awt.Color;
 import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
 
 public class Informacao extends JFrame {
 
@@ -51,14 +52,10 @@ public class Informacao extends JFrame {
 		membersDisplay.setBounds(20, 129, 253, 152);
 		contentPane.add(membersDisplay);
 		
-		JLabel projectName = new JLabel("Nome do Projeto:");
-		projectName.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		projectName.setBounds(20, 11, 187, 37);
-		contentPane.add(projectName);
-		
 		JLabel nameDisplay = new JLabel(getNameofProject());
-		nameDisplay.setFont(new Font("Monospaced", Font.PLAIN, 13));
-		nameDisplay.setBounds(30, 50, 132, 14);
+		nameDisplay.setHorizontalAlignment(SwingConstants.CENTER);
+		nameDisplay.setFont(new Font("Felix Titling", Font.BOLD, 20));
+		nameDisplay.setBounds(221, 11, 575, 53);
 		contentPane.add(nameDisplay);
 	
 	}
