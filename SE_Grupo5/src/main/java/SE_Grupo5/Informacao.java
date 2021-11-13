@@ -53,14 +53,21 @@ public class Informacao extends JFrame {
 		contentPane.add(membersDisplay);
 
 		getProjectTime();
-		for(SprintHours sH: sHours) {
-			System.out.println(sH.getInfomation());
-		}
 		
 		List<GraficoData> projetoData = new ArrayList<GraficoData>();
 		projetoData = getProjectGraficoData();
 		new GraficoBarra("Horas de trabalho usadas no Projeto", "Membro da equipe", "Horas", projetoData);
 		
+		for(SprintHours s:sHours) {
+			if(s.hasSpentTime()) {
+				List<GraficoData> sprintEstimateTimeData = new ArrayList<GraficoData>();
+				List<GraficoData> sprintSpentTimeData = new ArrayList<GraficoData>();
+				sprintEstimateTimeData = getSprintEstimateTimeGraficoData(s);
+				sprintSpentTimeData = getSprintSpentTimeGraficoData(s);
+				new GraficoBarra(s.getSprint()+" -Horas Estimadas", "Membro da equipe", "Horas", sprintEstimateTimeData);
+				new GraficoBarra(s.getSprint()+" -Horas Usadas", "Membro da equipe", "Horas", sprintSpentTimeData);
+			}
+		}
 		
 	}
 
@@ -148,7 +155,8 @@ public class Informacao extends JFrame {
 	public List<SprintHours> getSprintHours() {
 		return sHours;
 	}
-	public List<GraficoData> getProjectGraficoData(){
+	private List<GraficoData> getProjectGraficoData(){
+		
 		List<GraficoData> projetoData = new ArrayList<GraficoData>();
 		
 		for(SprintHours sprintHours: sHours) {
@@ -170,4 +178,24 @@ public class Informacao extends JFrame {
 		return projetoData;
 	}
 
+	private List<GraficoData> getSprintEstimateTimeGraficoData(SprintHours sprintHours) {
+		
+		List<GraficoData> sprintEstimateTimeData = new ArrayList<GraficoData>();
+		
+		for(Hours hours: sprintHours.getHours()) {
+			sprintEstimateTimeData.add(new GraficoData(hours.getUser(),hours.getEstimateTime()));
+		}
+		
+		return sprintEstimateTimeData;
+	}
+private List<GraficoData> getSprintSpentTimeGraficoData(SprintHours sprintHours) {
+		
+		List<GraficoData> sprintSpentTimeData = new ArrayList<GraficoData>();
+		
+		for(Hours hours: sprintHours.getHours()) {
+			sprintSpentTimeData.add(new GraficoData(hours.getUser(),hours.getSpentTime()));
+		}
+		
+		return sprintSpentTimeData;
+	}
 }

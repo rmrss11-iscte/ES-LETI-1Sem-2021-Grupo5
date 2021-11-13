@@ -18,7 +18,7 @@ public class GraficoBarra extends JFrame{
 	private static final long serialVersionUID = 124479714253861621L;
 
 	public GraficoBarra(String title,String xLabel,String yLabel, List<GraficoData> data) {
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle(title);
 		setSize(500, 500);
 		setLocationRelativeTo(null);
