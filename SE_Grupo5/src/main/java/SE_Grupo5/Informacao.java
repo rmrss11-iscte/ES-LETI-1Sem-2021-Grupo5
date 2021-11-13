@@ -14,70 +14,15 @@ import java.util.List;
 import java.awt.Color;
 import javax.swing.JTextArea;
 
-class Hours {
-	private String utilizador;
-	private double timeSpent;
-	private double timeEstimate;
-
-	public Hours(String utilizador) {
-		this.utilizador = utilizador;
-		this.timeEstimate = 0;
-		this.timeSpent = 0;
-	}
-
-	public void addTime(double spent, double estimate) {
-		this.timeSpent += spent;
-		this.timeEstimate += estimate;
-	}
-
-	public String getUser() {
-		return this.utilizador;
-	}
-
-	public String getInfomation() {
-		return utilizador + " has estimated " + timeEstimate + "hours and spent " + timeSpent + "hours!";
-	}
-}
-
-class SprintHours {
-
-	private String sprint = "";
-	private List<Hours> hours = new ArrayList<Hours>();
-
-	public SprintHours(String sprint) {
-		this.sprint = sprint;
-	}
-
-	public String getSprint() {
-		return this.sprint;
-	}
-
-	public List<Hours> getHours() {
-		return this.hours;
-	}
-
-	public String getInfomation() {
-
-		String s = "";
-		for (Hours h : hours) {
-			s = s + "\n" + h.getInfomation();
-		}
-
-		return "On board " + sprint + ":" + s;
-	}
-
-}
-
 public class Informacao extends JFrame {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 5924931067800093425L;
 	private JPanel contentPane;
 	private Trello trelloApi;
 	private String trelloUtilizador;
-	private String membersList = "";
 	private List<SprintHours> sHours = new ArrayList<SprintHours>();
 
 	/**
@@ -111,12 +56,19 @@ public class Informacao extends JFrame {
 		for(SprintHours sH: sHours) {
 			System.out.println(sH.getInfomation());
 		}
+		
+		List<GraficoData> projetoData = new ArrayList<GraficoData>();
+		projetoData = getProjectGraficoData();
+		new GraficoBarra("Horas de trabalho usadas no Projeto", "Membro da equipe", "Horas", projetoData);
+		
+		
 	}
 
 	private String getMembers() {
 
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		List<Member> members = trelloApi.getBoardMembers(boards.get(0).getId());
+		String membersList = "";
 		for (Member m : members) {
 			membersList = membersList + m.getFullName() + "\n";
 		}
@@ -145,7 +97,6 @@ public class Informacao extends JFrame {
 					for (Action a : actions) {
 						if (a.getType().matches("commentCard")) {
 							if (a.getData().getText().contains("plus!")) {
-								System.out.println(a.getData().getText());
 								String[] dataText = a.getData().getText().split(" ");
 
 								if (dataText[1].contains("@")) {
@@ -186,6 +137,37 @@ public class Informacao extends JFrame {
 				}
 			}
 		}
+	}
+
+	public Trello getTrelloApi() {
+		return trelloApi;
+	}
+	public String getTrelloUtilizador() {
+		return trelloUtilizador;
+	}
+	public List<SprintHours> getSprintHours() {
+		return sHours;
+	}
+	public List<GraficoData> getProjectGraficoData(){
+		List<GraficoData> projetoData = new ArrayList<GraficoData>();
+		
+		for(SprintHours sprintHours: sHours) {
+			if(sprintHours.hasSpentTime()) {
+				for(Hours hours:sprintHours.getHours()) {
+					int control=0;
+					for(GraficoData graficoData: projetoData) {
+						if(graficoData.getXData().equals(hours.getUser())) {
+							graficoData.addYData(hours.getSpentTime());
+							control=1;
+							break;
+						}
+					}
+					if(control==0) projetoData.add(new GraficoData(hours.getUser(),hours.getSpentTime()));
+				}
+			}
+		}
+		
+		return projetoData;
 	}
 
 }
