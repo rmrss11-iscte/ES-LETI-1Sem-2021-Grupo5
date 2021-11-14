@@ -4,6 +4,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import org.kohsuke.github.GitHub;
+
 import com.julienvey.trello.Trello;
 import com.julienvey.trello.domain.*;
 
@@ -23,15 +25,17 @@ public class Informacao extends JFrame {
 	private JPanel contentPane;
 	private Trello trelloApi;
 	private String trelloUtilizador;
+	private GitHub gitHubApi;
 	private List<SprintHours> sHours = new ArrayList<SprintHours>();
 
 	/**
 	 * Create the frame.
 	 */
-	public Informacao(Trello trelloApi, String trelloUtilizador) {
+	public Informacao(Trello trelloApi, String trelloUtilizador, GitHub gitHubApi) {
 
 		this.trelloApi = trelloApi;
 		this.trelloUtilizador = trelloUtilizador;
+		this.gitHubApi = gitHubApi;
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1033, 634);
