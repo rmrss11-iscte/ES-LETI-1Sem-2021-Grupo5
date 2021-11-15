@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.awt.Color;
 import javax.swing.JTextArea;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 public class Informacao extends JFrame {
 
@@ -33,6 +36,8 @@ public class Informacao extends JFrame {
 		this.trelloApi = trelloApi;
 		this.trelloUtilizador = trelloUtilizador;
 
+		getProjectTime();
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1033, 634);
 		contentPane = new JPanel();
@@ -52,23 +57,30 @@ public class Informacao extends JFrame {
 		membersDisplay.setBounds(20, 82, 253, 152);
 		contentPane.add(membersDisplay);
 
-		getProjectTime();
-		
+		JScrollPane scrollPane = CriarTabela(sHours);
+		scrollPane.setBounds(562, 45, 445, 152);
+		contentPane.add(scrollPane);
+
+		criarGraficos();
+
+	}
+
+	private void criarGraficos() {
 		List<GraficoData> projetoData = new ArrayList<GraficoData>();
 		projetoData = getProjectGraficoData();
 		new GraficoBarra("Horas de trabalho usadas no Projeto", "Membro da equipe", "Horas", projetoData);
-		
-		for(SprintHours s:sHours) {
-			if(s.hasSpentTime()) {
+
+		for (SprintHours s : sHours) {
+			if (s.hasSpentTime()) {
 				List<GraficoData> sprintEstimateTimeData = new ArrayList<GraficoData>();
 				List<GraficoData> sprintSpentTimeData = new ArrayList<GraficoData>();
 				sprintEstimateTimeData = getSprintEstimateTimeGraficoData(s);
 				sprintSpentTimeData = getSprintSpentTimeGraficoData(s);
-				new GraficoBarra(s.getSprint()+" -Horas Estimadas", "Membro da equipe", "Horas", sprintEstimateTimeData);
-				new GraficoBarra(s.getSprint()+" -Horas Usadas", "Membro da equipe", "Horas", sprintSpentTimeData);
+				new GraficoBarra(s.getSprint() + " -Horas Estimadas", "Membro da equipe", "Horas",
+						sprintEstimateTimeData);
+				new GraficoBarra(s.getSprint() + " -Horas Usadas", "Membro da equipe", "Horas", sprintSpentTimeData);
 			}
 		}
-		
 	}
 
 	private String getMembers() {
@@ -149,53 +161,84 @@ public class Informacao extends JFrame {
 	public Trello getTrelloApi() {
 		return trelloApi;
 	}
+
 	public String getTrelloUtilizador() {
 		return trelloUtilizador;
 	}
+
 	public List<SprintHours> getSprintHours() {
 		return sHours;
 	}
-	private List<GraficoData> getProjectGraficoData(){
-		
+
+	private List<GraficoData> getProjectGraficoData() {
+
 		List<GraficoData> projetoData = new ArrayList<GraficoData>();
-		
-		for(SprintHours sprintHours: sHours) {
-			if(sprintHours.hasSpentTime()) {
-				for(Hours hours:sprintHours.getHours()) {
-					int control=0;
-					for(GraficoData graficoData: projetoData) {
-						if(graficoData.getXData().equals(hours.getUser())) {
+
+		for (SprintHours sprintHours : sHours) {
+			if (sprintHours.hasSpentTime()) {
+				for (Hours hours : sprintHours.getHours()) {
+					int control = 0;
+					for (GraficoData graficoData : projetoData) {
+						if (graficoData.getXData().equals(hours.getUser())) {
 							graficoData.addYData(hours.getSpentTime());
-							control=1;
+							control = 1;
 							break;
 						}
 					}
-					if(control==0) projetoData.add(new GraficoData(hours.getUser(),hours.getSpentTime()));
+					if (control == 0)
+						projetoData.add(new GraficoData(hours.getUser(), hours.getSpentTime()));
 				}
 			}
 		}
-		
+
 		return projetoData;
 	}
 
 	private List<GraficoData> getSprintEstimateTimeGraficoData(SprintHours sprintHours) {
-		
+
 		List<GraficoData> sprintEstimateTimeData = new ArrayList<GraficoData>();
-		
-		for(Hours hours: sprintHours.getHours()) {
-			sprintEstimateTimeData.add(new GraficoData(hours.getUser(),hours.getEstimateTime()));
+
+		for (Hours hours : sprintHours.getHours()) {
+			sprintEstimateTimeData.add(new GraficoData(hours.getUser(), hours.getEstimateTime()));
 		}
-		
+
 		return sprintEstimateTimeData;
 	}
-private List<GraficoData> getSprintSpentTimeGraficoData(SprintHours sprintHours) {
-		
+
+	private List<GraficoData> getSprintSpentTimeGraficoData(SprintHours sprintHours) {
+
 		List<GraficoData> sprintSpentTimeData = new ArrayList<GraficoData>();
-		
-		for(Hours hours: sprintHours.getHours()) {
-			sprintSpentTimeData.add(new GraficoData(hours.getUser(),hours.getSpentTime()));
+
+		for (Hours hours : sprintHours.getHours()) {
+			sprintSpentTimeData.add(new GraficoData(hours.getUser(), hours.getSpentTime()));
 		}
-		
+
 		return sprintSpentTimeData;
 	}
+
+	private JScrollPane CriarTabela(List<SprintHours> sprintHoursList) {
+		String[] colunas = { "Sprint", "User", "Horas previstas", "Horas usadas" };
+		int numberOfLines = 0;
+		for (SprintHours sH : sprintHoursList) {
+			if (sH.hasSpentTime())
+				numberOfLines += sH.getHours().size();
+		}
+		Object[][] dados = new Object[numberOfLines][4];
+		int line = 0;
+		for (SprintHours sH : sprintHoursList) {
+			if (sH.hasSpentTime()) {
+				for (Hours h : sH.getHours()) {
+					dados[line][0] = sH.getSprint();
+					dados[line][1] = h.getUser();
+					dados[line][2] = h.getEstimateTime();
+					dados[line][3] = h.getSpentTime();
+					line++;
+				}
+			}
+		}
+		JTable tabela = new JTable(dados, colunas);
+		JScrollPane jScrollPane = new JScrollPane(tabela);
+		return jScrollPane;
+	}
+
 }

@@ -87,8 +87,11 @@ public class JanelaInicial {
 			public void mouseClicked(MouseEvent e) {
 				//frame.dispose();
 				frame.setVisible(false);
-				final Trello trelloApi = Conexao.conexaoTrello(getTrelloKey(), getTrelloToken());
-				final String trelloUtilizador = getTrelloUser();
+				final Trello trelloApi = Conexao.conexaoTrello("95535b17caae83c1c1435cbe99dbcf24",
+						"195e391a7ce8c837658de6d6473ac882450d8115dbe75d641f8c1cf6a396fd97");
+				final String trelloUtilizador = "andre_barroso88";
+				//final Trello trelloApi = Conexao.conexaoTrello(getTrelloKey(), getTrelloToken());
+				//final String trelloUtilizador = getTrelloUser();
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						try {
