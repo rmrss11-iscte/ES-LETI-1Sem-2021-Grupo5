@@ -12,7 +12,6 @@ import com.julienvey.trello.domain.*;
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +24,6 @@ import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import java.awt.event.MouseAdapter;
-import javax.swing.JTextPane;
 
 public class Informacao extends JFrame {
 
