@@ -191,15 +191,14 @@ public class Informacao extends JFrame {
 		textDate.setBounds(20, 338, 211, 49);
 		contentPane.add(textDate);
 
-<<<<<<< HEAD
-=======
+
 		JLabel nameDisplay = new JLabel(getNameofProject());
 		nameDisplay.setHorizontalAlignment(SwingConstants.CENTER);
 		nameDisplay.setFont(new Font("Felix Titling", Font.BOLD, 25));
 		nameDisplay.setBounds(221, 11, 575, 53);
 		contentPane.add(nameDisplay);
 
->>>>>>> branch 'main' of https://github.com/rmrss11-iscte/ES-LETI-1Sem-2021-Grupo5.git
+
 	}
 
 	private String getNameofProject() {
