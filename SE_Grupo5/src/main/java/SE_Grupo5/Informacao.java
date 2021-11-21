@@ -78,7 +78,7 @@ public class Informacao extends JFrame {
 		JTextArea dataDisplay = new JTextArea(getDate()); 
 		dataLabel.setLabelFor(dataDisplay);
 		dataDisplay.setEditable(false);
-		dataDisplay.setBounds(20, 190, 200, 20);
+		dataDisplay.setBounds(20, 190, 200, 20); 
 		contentPane.add(dataDisplay);
 		
 		JLabel sprintsdurationLabel = new JLabel("Duração de cada Sprint:");
