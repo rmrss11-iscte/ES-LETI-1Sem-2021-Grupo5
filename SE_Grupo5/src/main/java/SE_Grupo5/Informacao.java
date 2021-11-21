@@ -99,7 +99,7 @@ public class Informacao extends JFrame {
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportBorder(null);
-		scrollPane.setBounds(20, 437, 274, 179);
+		scrollPane.setBounds(20, 437, 274, 179); 
 		contentPane.add(scrollPane);
 
 		JTextArea productBacklogDisplay = new JTextArea(getProductBacklog());
