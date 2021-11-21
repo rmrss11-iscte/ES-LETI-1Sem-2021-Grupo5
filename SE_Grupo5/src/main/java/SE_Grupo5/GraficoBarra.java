@@ -14,7 +14,11 @@ import java.awt.BorderLayout;
 
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
-
+/**
+ * Esta classe serve para criar uma frame com gráficos separados em tabs 
+ * 
+ * @author Andre Barroso
+ */
 public class GraficoBarra extends JFrame{
 	
 	/**
@@ -23,66 +27,92 @@ public class GraficoBarra extends JFrame{
 	private static final long serialVersionUID = 124479714253861621L;
 	JTabbedPane abas = new JTabbedPane();
 	
-	public GraficoBarra(String title,String xLabel,String yLabel, List<SprintHours> sprintHoursList) {
+	/**
+	 * Cria uma frame com gráficos das Horas Estimadas e Utilizadas por sprint e membro da equipe
+	 * Separando os sprints por tabs
+	 * E ainda um gráfico com as horas utilizadas por membro no total do projeto 
+	 * 
+	 * @param title Representa o nome da frame
+	 * @param xLabel Representa o nome do eixo dos X's
+	 * @param yLabel Representa o nome do eixo dos Y's
+	 * @param sprintHoursList Representa uma lista de SprintHours
+	 */
+	public GraficoBarra(String title,String xLabel,String yLabel, List<SprintHoursInformation> sprintHoursList) {
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		setTitle(title);
 		setSize(1000, 550);
 		setLocationRelativeTo(null);
 		add(BorderLayout.CENTER,abas);
 		
-		//adicionar aba com grafico do projeto
-		List<GraficoData> projetoData = new ArrayList<GraficoData>();
+		List<GraficoBarraData> projetoData = new ArrayList<GraficoBarraData>();
 		projetoData = getProjectHorasGraficoData(sprintHoursList);
-		abas.addTab("Projeto", criarGrafico("Horas de trabalho usadas no Projeto", "Membro da equipe", "Horas", projetoData));
+		abas.addTab("Projeto", criarGrafico("Horas de trabalho usadas no Projeto", xLabel, yLabel, projetoData));
 		
-		//adicionar abas com grafico dos sprints
-		for(SprintHours sprintHours : sprintHoursList) {
+		for(SprintHoursInformation sprintHours : sprintHoursList) {
 			if (sprintHours.hasSpentTime()) {
 				
 				
-				List<GraficoData> sprintEstimateTimeData = new ArrayList<GraficoData>();
-				List<GraficoData> sprintSpentTimeData = new ArrayList<GraficoData>();
+				List<GraficoBarraData> sprintEstimateTimeData = new ArrayList<GraficoBarraData>();
+				List<GraficoBarraData> sprintSpentTimeData = new ArrayList<GraficoBarraData>();
 				sprintEstimateTimeData = getSprintEstimateTimeGraficoData(sprintHours);
 				sprintSpentTimeData = getSprintSpentTimeGraficoData(sprintHours);
 				JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 				splitPane.setDividerSize(1);
 				splitPane.setDividerLocation(500);
-				splitPane.setLeftComponent(criarGrafico(sprintHours.getSprint() + " -Horas Estimadas", "Membro da equipe", "Horas",
+				splitPane.setLeftComponent(criarGrafico(sprintHours.getSprint() + " -Horas Estimadas", xLabel, yLabel,
 						sprintEstimateTimeData));
-				splitPane.setRightComponent(criarGrafico(sprintHours.getSprint() + " -Horas Usadas", "Membro da equipe", "Horas", sprintSpentTimeData));
+				splitPane.setRightComponent(criarGrafico(sprintHours.getSprint() + " -Horas Usadas", xLabel, yLabel, sprintSpentTimeData));
 				abas.addTab(sprintHours.getSprint(),splitPane);
 			}
 		}
 		
 		setVisible(true);
 	}
-	public GraficoBarra(String title,String xLabel,String yLabel, List<SprintHours> sprintHoursList ,double custoHora) {
+	
+	/**
+	 * Cria uma frame com gráficos o valor a pagar por sprint e membro da equipe
+	 * Separando os sprints por tabs
+	 * E ainda um gráfico com o pagamento total por membro
+	 * 
+	 * @param title Representa o nome da frame
+	 * @param xLabel Representa o nome do eixo dos X's
+	 * @param yLabel Representa o nome do eixo dos Y's
+	 * @param sprintHoursList Representa uma lista de SprintHours
+	 */
+	public GraficoBarra(String title,String xLabel,String yLabel, List<SprintHoursInformation> sprintHoursList ,double custoHora) {
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		setTitle(title);
 		setSize(550, 550);
 		setLocationRelativeTo(null);
 		add(BorderLayout.CENTER,abas);
 		
-		//adicionar aba com grafico do projeto
-		List<GraficoData> projetoData = new ArrayList<GraficoData>();
+		List<GraficoBarraData> projetoData = new ArrayList<GraficoBarraData>();
 		projetoData = getProjectPagamentoGraficoData(sprintHoursList,custoHora);
-		abas.addTab("Projeto", criarGrafico("Pagamento Total", "Membro da equipe", "Pagamento", projetoData));
+		abas.addTab("Projeto", criarGrafico("Pagamento Total", xLabel, yLabel, projetoData));
 		
-		//adicionar abas com grafico dos sprints
-		for(SprintHours sprintHours : sprintHoursList) {
+		for(SprintHoursInformation sprintHours : sprintHoursList) {
 			if (sprintHours.hasSpentTime()) {
-				List<GraficoData> sprintPagamentoData = new ArrayList<GraficoData>();
+				List<GraficoBarraData> sprintPagamentoData = new ArrayList<GraficoBarraData>();
 				sprintPagamentoData = getSprintPagamentoGraficoData(sprintHours,custoHora);
-				abas.addTab(sprintHours.getSprint(),criarGrafico(sprintHours.getSprint(), "Membro da equipe", "Pagamento", sprintPagamentoData));
+				abas.addTab(sprintHours.getSprint(),criarGrafico(sprintHours.getSprint(), xLabel, yLabel, sprintPagamentoData));
 			}
 		}
 		
 		setVisible(true);
 	}
-
-	private ChartPanel criarGrafico(String title,String xLabel,String yLabel, List<GraficoData> data) {
+	
+	/**
+	 * Este método cria um ChartPanel que é criado com um gráfico em JFreeChart 
+	 * 
+	 * @param title Representa o nome da frame
+	 * @param xLabel Representa o nome do eixo dos X's
+	 * @param yLabel Representa o nome do eixo dos Y's
+	 * @param data Representa uma lista com a inforamções pra cada barra
+	 * @return chartPanel
+	 */
+	private ChartPanel criarGrafico(String title,String xLabel,String yLabel, List<GraficoBarraData> data) {
 		DefaultCategoryDataset barra = new  DefaultCategoryDataset();
-		for(GraficoData d: data) {
+		for(GraficoBarraData d: data) {
 			barra.setValue(d.yData, d.xData, "");
 		}
 		JFreeChart grafico = ChartFactory.createBarChart(title, xLabel, yLabel, barra, PlotOrientation.VERTICAL, true, true, true);
@@ -90,15 +120,23 @@ public class GraficoBarra extends JFrame{
 		return chartPanel;
 	}
 	
-	private List<GraficoData> getProjectHorasGraficoData(List<SprintHours> sprintHoursList) {
+	/**
+	 * Este método dá return de uma lista de GraficoBarraData criada 
+	 * Através da lista de SprintHours dada nos parametros e contém
+	 * As Horas utilizadas por cada membro no projeto
+	 * 
+	 * @param sprintHoursList Representa uma lista de SprintHours
+	 * @return projetoData
+	 */
+	private List<GraficoBarraData> getProjectHorasGraficoData(List<SprintHoursInformation> sprintHoursList) {
 
-		List<GraficoData> projetoData = new ArrayList<GraficoData>();
+		List<GraficoBarraData> projetoData = new ArrayList<GraficoBarraData>();
 
-		for (SprintHours sprintHours : sprintHoursList) {
+		for (SprintHoursInformation sprintHours : sprintHoursList) {
 			if (sprintHours.hasSpentTime()) {
-				for (Hours hours : sprintHours.getHours()) {
+				for (MemberHoursInformation hours : sprintHours.getMemberHoursInformationList()) {
 					int control = 0;
-					for (GraficoData graficoData : projetoData) {
+					for (GraficoBarraData graficoData : projetoData) {
 						if (graficoData.getXData().equals(hours.getUser())) {
 							graficoData.addYData(hours.getSpentTime());
 							control = 1;
@@ -106,7 +144,7 @@ public class GraficoBarra extends JFrame{
 						}
 					}
 					if (control == 0)
-						projetoData.add(new GraficoData(hours.getUser(), hours.getSpentTime()));
+						projetoData.add(new GraficoBarraData(hours.getUser(), hours.getSpentTime()));
 				}
 			}
 		}
@@ -114,15 +152,24 @@ public class GraficoBarra extends JFrame{
 		return projetoData;
 	}
 
-	private List<GraficoData> getProjectPagamentoGraficoData(List<SprintHours> sprintHoursList,double custoHora) {
+	/**
+	 * Este método dá return de uma lista de GraficoBarraData criada 
+	 * Através da lista de SprintHours e do custo por hora a pagar dados nos parametros 
+	 * E contém o valor total a se pagar por membro
+	 * 
+	 * @param sprintHoursList Representa uma lista de SprintHours
+	 * @param custoHora Representa o valor a pagar por hora de trabalho
+	 * @return projetoData
+	 */	
+	private List<GraficoBarraData> getProjectPagamentoGraficoData(List<SprintHoursInformation> sprintHoursList,double custoHora) {
 
-		List<GraficoData> projetoData = new ArrayList<GraficoData>();
+		List<GraficoBarraData> projetoData = new ArrayList<GraficoBarraData>();
 
-		for (SprintHours sprintHours : sprintHoursList) {
+		for (SprintHoursInformation sprintHours : sprintHoursList) {
 			if (sprintHours.hasSpentTime()) {
-				for (Hours hours : sprintHours.getHours()) {
+				for (MemberHoursInformation hours : sprintHours.getMemberHoursInformationList()) {
 					int control = 0;
-					for (GraficoData graficoData : projetoData) {
+					for (GraficoBarraData graficoData : projetoData) {
 						if (graficoData.getXData().equals(hours.getUser())) {
 							graficoData.addYData(hours.getSpentTime()*custoHora);
 							control = 1;
@@ -130,7 +177,7 @@ public class GraficoBarra extends JFrame{
 						}
 					}
 					if (control == 0)
-						projetoData.add(new GraficoData(hours.getUser(), hours.getSpentTime()*custoHora));
+						projetoData.add(new GraficoBarraData(hours.getUser(), hours.getSpentTime()*custoHora));
 				}
 			}
 		}
@@ -138,39 +185,59 @@ public class GraficoBarra extends JFrame{
 		return projetoData;
 	}
 	
-	private List<GraficoData> getSprintEstimateTimeGraficoData(SprintHours sprintHours) {
+	/**
+	 * Este método dá return de uma lista de GráficoBarraData
+	 * Que contém as horas estimadas por membro no dado sprint 
+	 * 
+	 * @param sprintHours Contém os membros do sprint com as horas estimadas e utilizadas
+	 * @return sprintEstimateTimeData
+	 */
+	private List<GraficoBarraData> getSprintEstimateTimeGraficoData(SprintHoursInformation sprintHours) {
 
-		List<GraficoData> sprintEstimateTimeData = new ArrayList<GraficoData>();
+		List<GraficoBarraData> sprintEstimateTimeData = new ArrayList<GraficoBarraData>();
 
-		for (Hours hours : sprintHours.getHours()) {
-			sprintEstimateTimeData.add(new GraficoData(hours.getUser(), hours.getEstimateTime()));
+		for (MemberHoursInformation hours : sprintHours.getMemberHoursInformationList()) {
+			sprintEstimateTimeData.add(new GraficoBarraData(hours.getUser(), hours.getEstimateTime()));
 		}
 
 		return sprintEstimateTimeData;
 	}
 
-	private List<GraficoData> getSprintSpentTimeGraficoData(SprintHours sprintHours) {
+	/**
+	 * Este método dá return de uma lista de GráficoBarraData
+	 * Que contém as horas utilizadas por membro no dado sprint 
+	 * 
+	 * @param sprintHours Contém os membros do sprint com as horas estimadas e utilizadas
+	 * @return sprintSpentTimeData
+	 */
+	private List<GraficoBarraData> getSprintSpentTimeGraficoData(SprintHoursInformation sprintHours) {
 
-		List<GraficoData> sprintSpentTimeData = new ArrayList<GraficoData>();
+		List<GraficoBarraData> sprintSpentTimeData = new ArrayList<GraficoBarraData>();
 
-		for (Hours hours : sprintHours.getHours()) {
-			sprintSpentTimeData.add(new GraficoData(hours.getUser(), hours.getSpentTime()));
+		for (MemberHoursInformation hours : sprintHours.getMemberHoursInformationList()) {
+			sprintSpentTimeData.add(new GraficoBarraData(hours.getUser(), hours.getSpentTime()));
 		}
 
 		return sprintSpentTimeData;
 	}
 	
-	private List<GraficoData> getSprintPagamentoGraficoData(SprintHours sprintHours,double custoHora) {
+	/**
+	 * Este método dá return de uma lista de GráficoBarraData
+	 * Que contém o valor a pagar por membro no dado sprint 
+	 * 
+	 * @param sprintHours Contém os membros do sprint com as horas estimadas e utilizadas
+	 * @param custoHora Representa o valor a pagar por hora de trabalho
+	 * @return sprintPagamentoData
+	 */
+	private List<GraficoBarraData> getSprintPagamentoGraficoData(SprintHoursInformation sprintHours,double custoHora) {
 
-		List<GraficoData> sprintSpentTimeData = new ArrayList<GraficoData>();
+		List<GraficoBarraData> sprintPagamentoData = new ArrayList<GraficoBarraData>();
 
-		for (Hours hours : sprintHours.getHours()) {
-			sprintSpentTimeData.add(new GraficoData(hours.getUser(), hours.getSpentTime()*custoHora));
+		for (MemberHoursInformation hours : sprintHours.getMemberHoursInformationList()) {
+			sprintPagamentoData.add(new GraficoBarraData(hours.getUser(), hours.getSpentTime()*custoHora));
 		}
 
-		return sprintSpentTimeData;
+		return sprintPagamentoData;
 	}
-	
-	
-	
+
 }
