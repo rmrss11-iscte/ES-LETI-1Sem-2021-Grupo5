@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
 	<name>ES-LETI-1Sem-2021-Grupo5</name>
@@ -9,3 +10,16 @@
 	<natures>
 	</natures>
 </projectDescription>
+=======
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>ES-LETI-1Sem-2021-Grupo5</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+	</buildSpec>
+	<natures>
+	</natures>
+</projectDescription>
+>>>>>>> refs/heads/main2
