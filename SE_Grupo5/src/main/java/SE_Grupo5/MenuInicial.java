@@ -17,8 +17,12 @@ import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-
-public class JanelaInicial {
+/**
+ * Esta classe serve para criar uma frame e pedir ao utilizador 
+ * A sua key, Token e user no Trello e o seu Token no GitHub 
+ *
+ */
+public class MenuInicial {
 
 	private JFrame frame;
 	private JTextField gitHubToken;
@@ -30,7 +34,7 @@ public class JanelaInicial {
 	/**
 	 * Create the application.
 	 */
-	public JanelaInicial() {
+	public MenuInicial() {
 		initialize();
 	}
 
@@ -43,14 +47,14 @@ public class JanelaInicial {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
-		JLabel lblNewLabel = new JLabel("GitHub Repository");
+		JLabel lblNewLabel = new JLabel("GitHub");
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 22));
 		lblNewLabel.setBounds(10, 11, 300, 37);
 		frame.getContentPane().add(lblNewLabel);
 
 		gitHubToken = new JTextField();
 		gitHubToken.setFont(new Font("Tahoma", Font.ITALIC, 13));
-		gitHubToken.setText("Escreva aqui...");
+		gitHubToken.setText("GitHub Token");
 		gitHubToken.setBounds(20, 59, 404, 29);
 		frame.getContentPane().add(gitHubToken);
 		gitHubToken.setColumns(10);
@@ -114,22 +118,47 @@ public class JanelaInicial {
 
 	}
 
+	/**
+	 * Este método dá return do Token no GitHub
+	 * 
+	 * @return String
+	 */
 	public String getGitHubToken() {
 		return gitHubToken.getText();
 	}
 
+	/**
+	 * Este método dá return da Key no Trello
+	 * 
+	 * @return String
+	 */
 	public String getTrelloKey() {
 		return trelloKey.getText();
 	}
-
+	
+	/**
+	 * Este método dá return do Token no Trello
+	 * 
+	 * @return String
+	 */
 	public String getTrelloToken() {
 		return trelloToken.getText();
 	}
-
+	
+	/**
+	 * Este método dá return do User no Trello
+	 * 
+	 * @return String
+	 */
 	public String getTrelloUser() {
 		return trelloUser.getText();
 	}
-
+	
+	/**
+	 * Este método dá return desta frame
+	 * 
+	 * @return frame
+	 */
 	public Window getFrame() {
 		return frame;
 	}

@@ -35,7 +35,7 @@ public class Informacao extends JFrame {
 	private Trello trelloApi;
 	private String trelloUtilizador;
 	private GitHub gitHubApi;
-	private List<SprintHours> sHours = new ArrayList<SprintHours>();
+	private List<SprintHoursInformation> sHours = new ArrayList<SprintHoursInformation>();
 	private JTextField txtNovoCustohora = new JTextField();;
 	private JTable tabelaHoras;
 	private JTable tabelaCusto;
@@ -43,9 +43,13 @@ public class Informacao extends JFrame {
 
 	/**
 	 * Create the frame.
+	 * 
+	 * @param trelloApi Representa a conexão ao trello
+	 * @param trelloUtilizador Representa o user no trello do Utilizador
+	 * @param gitHubApi Representa a conexão ao GitHub
 	 */
 	public Informacao(Trello trelloApi, String trelloUtilizador, GitHub gitHubApi) {
-
+		
 		this.trelloApi = trelloApi;
 		this.trelloUtilizador = trelloUtilizador;
 		this.gitHubApi = gitHubApi;
@@ -163,8 +167,15 @@ public class Informacao extends JFrame {
 		
 
 	}
-
+	/**
+	 * Se o parametro por diferente do valor a se pagar por hora (custoHora) então 
+	 * Altera o valor a se pagar por hora
+	 * e atualiza a tabela "tabelaCusto" com os novos custos 
+	 * 
+	 * @param novoCustoHora Representa o novo valor a se pagar por Hora
+	 */
 	private void setNovoCustoHora(double novoCustoHora) {
+		if(novoCustoHora == custoHora) return;
 		int row = 0;
 		while (row < tabelaCusto.getRowCount()) {
 			double newValue = ((Number) tabelaCusto.getValueAt(row, 2)).doubleValue() * (novoCustoHora / custoHora);
@@ -173,9 +184,13 @@ public class Informacao extends JFrame {
 		}
 		custoHora = novoCustoHora;
 	}
-
+	/**
+	 * Dá return de uma String que contém todos os membros do projeto separados por \n 
+	 * 
+	 * @return String 
+	 */
 	private String getMembers() {
-
+		
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		List<Member> members = trelloApi.getBoardMembers(boards.get(0).getId());
 		String membersList = "";
@@ -184,7 +199,12 @@ public class Informacao extends JFrame {
 		}
 		return membersList;
 	}
-
+	
+	/**
+	 * Este método dá return da data de início do projeto
+	 * 
+	 * @return String
+	 */
 	private String getDate() {
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		List<Card> cards = trelloApi.getBoardCards(boards.get(0).getId());
@@ -192,7 +212,12 @@ public class Informacao extends JFrame {
 		Date dataInicio = projectCard.getDue();
 		return dataInicio.toString();
 	}
-
+	
+	/**
+	 * Este método dá return de uma String o Product Backlog
+	 * 
+	 * @return String
+	 */
 	private String getProductBacklog() {
 
 		String productBacklogList = "";
@@ -213,6 +238,10 @@ public class Informacao extends JFrame {
 		return productBacklogList;
 	}
 
+	/**
+	 * Vai ao trello e obtém as horas estimadas e utilizadas de cada membro por sprint
+	 * Armazenando-as numa lista de SprintHours
+	 */
 	private void getProjectTime() {
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		for (Board b : boards) {
@@ -225,7 +254,7 @@ public class Informacao extends JFrame {
 				control1++;
 			}
 			if (sHours.size() == control1) {
-				sHours.add(new SprintHours(boardName));
+				sHours.add(new SprintHoursInformation(boardName));
 			}
 			List<TList> lists = trelloApi.getBoardLists(b.getId());
 			for (TList l : lists) {
@@ -241,32 +270,32 @@ public class Informacao extends JFrame {
 									String[] user = dataText[1].split("@");
 									String[] doubles = dataText[2].split("/");
 									int control = 0;
-									while (control < sHours.get(control1).getHours().size()) {
-										if (sHours.get(control1).getHours().get(control).getUser().equals(user[1])) {
+									while (control < sHours.get(control1).getMemberHoursInformationList().size()) {
+										if (sHours.get(control1).getMemberHoursInformationList().get(control).getUser().equals(user[1])) {
 											break;
 										}
 										control++;
 									}
-									if (sHours.get(control1).getHours().size() == control) {
-										sHours.get(control1).getHours().add(new Hours(user[1]));
+									if (sHours.get(control1).getMemberHoursInformationList().size() == control) {
+										sHours.get(control1).getMemberHoursInformationList().add(new MemberHoursInformation(user[1]));
 									}
-									sHours.get(control1).getHours().get(control).addTime(Double.parseDouble(doubles[0]),
+									sHours.get(control1).getMemberHoursInformationList().get(control).addTime(Double.parseDouble(doubles[0]),
 											Double.parseDouble(doubles[1]));
 								} else {
 									String user = trelloApi.getActionMemberCreator(a.getId()).getUsername();
 									String[] doubles = dataText[1].split("/");
 
 									int control = 0;
-									while (control < sHours.get(control1).getHours().size()) {
-										if (sHours.get(control1).getHours().get(control).getUser().equals(user)) {
+									while (control < sHours.get(control1).getMemberHoursInformationList().size()) {
+										if (sHours.get(control1).getMemberHoursInformationList().get(control).getUser().equals(user)) {
 											break;
 										}
 										control++;
 									}
-									if (sHours.get(control1).getHours().size() == control) {
-										sHours.get(control1).getHours().add(new Hours(user));
+									if (sHours.get(control1).getMemberHoursInformationList().size() == control) {
+										sHours.get(control1).getMemberHoursInformationList().add(new MemberHoursInformation(user));
 									}
-									sHours.get(control1).getHours().get(control).addTime(Double.parseDouble(doubles[0]),
+									sHours.get(control1).getMemberHoursInformationList().get(control).addTime(Double.parseDouble(doubles[0]),
 											Double.parseDouble(doubles[1]));
 								}
 							}
@@ -276,33 +305,52 @@ public class Informacao extends JFrame {
 			}
 		}
 	}
-
+	/**
+	 * Dá return da conexao ao Trello
+	 * 
+	 * @return Trello
+	 */
 	public Trello getTrelloApi() {
 		return trelloApi;
 	}
-
+	/**
+	 * Dá return de uma String que representa o user no trello do Utilizador
+	 * 
+	 * @return String
+	 */
 	public String getTrelloUtilizador() {
 		return trelloUtilizador;
 	}
-
-	public List<SprintHours> getSprintHours() {
+	/**
+	 * Dá return da lista de SprintHours
+	 * 
+	 * @return List<SprintHours>
+	 */
+	public List<SprintHoursInformation> getSprintHours() {
 		return sHours;
 	}
-
-	private JTable CriarTabela(List<SprintHours> sprintHoursList) {
+	/**
+	 * Cria uma tabela do tipo JTable com as horas previstas e utilizadas
+	 * por membro da equipe e por sprint e as horas previstas e utilizadas do projeto
+	 *  
+	 * @param sprintHoursList Representa uma lista de SprintHours
+	 * 
+	 * @return JTable 
+	 */
+	private JTable CriarTabela(List<SprintHoursInformation> sprintHoursList) {
 		String[] colunas = { "Sprint", "User", "Horas previstas", "Horas usadas" };
 		int numberOfLines = 0;
-		for (SprintHours sH : sprintHoursList) {
+		for (SprintHoursInformation sH : sprintHoursList) {
 			if (sH.hasSpentTime())
-				numberOfLines += sH.getHours().size();
+				numberOfLines += sH.getMemberHoursInformationList().size();
 		}
 		Object[][] dados = new Object[numberOfLines + 1][4];
 		int line = 1;
 		double estimate = 0;
 		double spent = 0;
-		for (SprintHours sH : sprintHoursList) {
+		for (SprintHoursInformation sH : sprintHoursList) {
 			if (sH.hasSpentTime()) {
-				for (Hours h : sH.getHours()) {
+				for (MemberHoursInformation h : sH.getMemberHoursInformationList()) {
 					dados[line][0] = sH.getSprint();
 					dados[line][1] = h.getUser();
 					dados[line][2] = h.getEstimateTime();
@@ -323,21 +371,28 @@ public class Informacao extends JFrame {
 		tabela.setBackground(UIManager.getColor("Button.light"));
 		return tabela;
 	}
-
-	private JTable criarTabela(List<SprintHours> sprintHoursList, double custoHora) {
+	/**
+	 * Cria uma tabela do tipo JTable com os pagamentos por membro de equipe e por sprint e custo total do projeto
+	 *  
+	 * @param sprintHoursList Representa uma lista de SprintHours
+	 * @param custoHora Representa o valor a pagar por hora
+	 * 
+	 * @return JTable 
+	 */
+	private JTable criarTabela(List<SprintHoursInformation> sprintHoursList, double custoHora) {
 		String[] colunas = { "Sprint", "User", "Pagamento" };
 
 		int numberOfLines = 0;
-		for (SprintHours sH : sprintHoursList) {
+		for (SprintHoursInformation sH : sprintHoursList) {
 			if (sH.hasSpentTime())
-				numberOfLines += sH.getHours().size();
+				numberOfLines += sH.getMemberHoursInformationList().size();
 		}
 		Object[][] dados = new Object[numberOfLines + 1][3];
 		int line = 1;
 		double custo = 0;
-		for (SprintHours sH : sprintHoursList) {
+		for (SprintHoursInformation sH : sprintHoursList) {
 			if (sH.hasSpentTime()) {
-				for (Hours h : sH.getHours()) {
+				for (MemberHoursInformation h : sH.getMemberHoursInformationList()) {
 					dados[line][0] = sH.getSprint();
 					dados[line][1] = h.getUser();
 					dados[line][2] = h.getSpentTime() * custoHora;
