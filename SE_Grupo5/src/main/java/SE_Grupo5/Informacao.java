@@ -94,7 +94,7 @@ public class Informacao extends JFrame {
 
 		JLabel productBacklogLabel = new JLabel("Items do ProductBacklog:");
 		productBacklogLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
-		productBacklogLabel.setBounds(10, 409, 263, 28);
+		productBacklogLabel.setBounds(10, 409, 263, 28); 
 		contentPane.add(productBacklogLabel);
 
 		JScrollPane scrollPane = new JScrollPane();
