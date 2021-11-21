@@ -61,33 +61,50 @@ public class Informacao extends JFrame {
 
 		JLabel membersLabel = new JLabel("Membros do projeto:");
 		membersLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
-		membersLabel.setBounds(10, 119, 211, 43);
+		membersLabel.setBounds(10, 20, 200, 43);
 		contentPane.add(membersLabel);
 
 		JTextArea membersDisplay = new JTextArea(getMembers());
 		membersLabel.setLabelFor(membersDisplay);
 		membersDisplay.setEditable(false);
-		membersDisplay.setBounds(20, 162, 253, 152);
+		membersDisplay.setBounds(20, 65, 120, 90);
 		contentPane.add(membersDisplay);
 
 		JLabel dataLabel = new JLabel("Data de Inicio:");
 		dataLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
-		dataLabel.setBounds(10, 310, 170, 32);
+		dataLabel.setBounds(10, 160, 160, 30);
 		contentPane.add(dataLabel);
+		
+		JTextArea dataDisplay = new JTextArea(getDate());
+		dataLabel.setLabelFor(dataDisplay);
+		dataDisplay.setEditable(false);
+		dataDisplay.setBounds(20, 190, 200, 20);
+		contentPane.add(dataDisplay);
+		
+		JLabel sprintsdurationLabel = new JLabel("Duração de cada Sprint:");
+		sprintsdurationLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
+		sprintsdurationLabel.setBounds(10, 225, 300, 53); 
+		contentPane.add(sprintsdurationLabel);
+
+		JTextArea sprintsdurationDisplay = new JTextArea(getSprintsDuration());
+		sprintsdurationLabel.setLabelFor(sprintsdurationDisplay);
+		sprintsdurationDisplay.setEditable(false);
+		sprintsdurationDisplay.setBounds(20, 270, 253, 100);
+		contentPane.add(sprintsdurationDisplay);
 
 		JLabel productBacklogLabel = new JLabel("Items do ProductBacklog:");
 		productBacklogLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
 		productBacklogLabel.setBounds(10, 409, 263, 28);
 		contentPane.add(productBacklogLabel);
-		
+
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportBorder(null);
 		scrollPane.setBounds(20, 437, 274, 179);
 		contentPane.add(scrollPane);
-		
-				JTextArea productBacklogDisplay = new JTextArea(getProductBacklog());
-				scrollPane.setViewportView(productBacklogDisplay);
-				productBacklogLabel.setLabelFor(productBacklogDisplay);
+
+		JTextArea productBacklogDisplay = new JTextArea(getProductBacklog());
+		scrollPane.setViewportView(productBacklogDisplay);
+		productBacklogLabel.setLabelFor(productBacklogDisplay);
 
 		JScrollPane scrollPane_custo = new JScrollPane();
 		scrollPane_custo.setBounds(444, 362, 445, 155);
@@ -145,22 +162,20 @@ public class Informacao extends JFrame {
 		btnObterGraficoCustos.setFont(new Font("Tahoma", Font.BOLD, 11));
 		btnObterGraficoCustos.setBounds(615, 627, 274, 43);
 		contentPane.add(btnObterGraficoCustos);
-		
+
 		JLabel lblTabelaDeHoras = new JLabel("Tabela de horas previstas/usadas");
 		lblTabelaDeHoras.setFont(new Font("Tahoma", Font.BOLD, 18));
 		lblTabelaDeHoras.setBounds(412, 119, 324, 43);
 		contentPane.add(lblTabelaDeHoras);
-		
+
 		JLabel lblTabelaDeCustos = new JLabel("Tabela de custos");
 		lblTabelaDeCustos.setFont(new Font("Tahoma", Font.BOLD, 18));
 		lblTabelaDeCustos.setBounds(412, 326, 305, 43);
 		contentPane.add(lblTabelaDeCustos);
-		
+
 		JTextArea textDate = new JTextArea(getDate());
 		textDate.setBounds(20, 338, 211, 49);
 		contentPane.add(textDate);
-
-		
 
 	}
 
@@ -190,7 +205,18 @@ public class Informacao extends JFrame {
 		List<Card> cards = trelloApi.getBoardCards(boards.get(0).getId());
 		Card projectCard = trelloApi.getBoardCard(boards.get(0).getId(), cards.get(0).getId());
 		Date dataInicio = projectCard.getDue();
-		return dataInicio.toString();
+		return dataInicio.toString(); 
+	}
+	
+	private String getSprintsDuration() {
+		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
+		List<TList> lists = trelloApi.getBoardLists(boards.get(0).getId());
+		List<Card> listCards = trelloApi.getListCards(lists.get(1).getId());
+		String sprintsduration = "";
+		for (Card c : listCards) {
+			sprintsduration += c.getDue() + "\n";
+		}
+		return sprintsduration;
 	}
 
 	private String getProductBacklog() {
