@@ -60,7 +60,7 @@ public class Informacao extends JFrame {
 		contentPane.setLayout(null);
 
 		JLabel membersLabel = new JLabel("Membros do projeto:");
-		membersLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
+		membersLabel.setFont(new Font("Tahoma", Font.BOLD, 18)); 
 		membersLabel.setBounds(10, 20, 200, 43);
 		contentPane.add(membersLabel);
 
