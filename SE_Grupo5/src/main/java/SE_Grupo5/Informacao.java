@@ -75,7 +75,7 @@ public class Informacao extends JFrame {
 		dataLabel.setBounds(10, 160, 160, 30);
 		contentPane.add(dataLabel);
 		
-		JTextArea dataDisplay = new JTextArea(getDate());
+		JTextArea dataDisplay = new JTextArea(getDate()); 
 		dataLabel.setLabelFor(dataDisplay);
 		dataDisplay.setEditable(false);
 		dataDisplay.setBounds(20, 190, 200, 20);
