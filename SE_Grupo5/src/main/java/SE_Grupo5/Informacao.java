@@ -44,12 +44,12 @@ public class Informacao extends JFrame {
 	/**
 	 * Create the frame.
 	 * 
-	 * @param trelloApi Representa a conexão ao trello
+	 * @param trelloApi        Representa a conexão ao trello
 	 * @param trelloUtilizador Representa o user no trello do Utilizador
-	 * @param gitHubApi Representa a conexão ao GitHub
+	 * @param gitHubApi        Representa a conexão ao GitHub
 	 */
 	public Informacao(Trello trelloApi, String trelloUtilizador, GitHub gitHubApi) {
-		
+
 		this.trelloApi = trelloApi;
 		this.trelloUtilizador = trelloUtilizador;
 		this.gitHubApi = gitHubApi;
@@ -83,15 +83,15 @@ public class Informacao extends JFrame {
 		productBacklogLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
 		productBacklogLabel.setBounds(10, 409, 263, 28);
 		contentPane.add(productBacklogLabel);
-		
+
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportBorder(null);
 		scrollPane.setBounds(20, 437, 274, 179);
 		contentPane.add(scrollPane);
-		
-				JTextArea productBacklogDisplay = new JTextArea(getProductBacklog());
-				scrollPane.setViewportView(productBacklogDisplay);
-				productBacklogLabel.setLabelFor(productBacklogDisplay);
+
+		JTextArea productBacklogDisplay = new JTextArea(getProductBacklog());
+		scrollPane.setViewportView(productBacklogDisplay);
+		productBacklogLabel.setLabelFor(productBacklogDisplay);
 
 		JScrollPane scrollPane_custo = new JScrollPane();
 		scrollPane_custo.setBounds(444, 362, 445, 155);
@@ -149,33 +149,33 @@ public class Informacao extends JFrame {
 		btnObterGraficoCustos.setFont(new Font("Tahoma", Font.BOLD, 11));
 		btnObterGraficoCustos.setBounds(615, 627, 274, 43);
 		contentPane.add(btnObterGraficoCustos);
-		
+
 		JLabel lblTabelaDeHoras = new JLabel("Tabela de horas previstas/usadas");
 		lblTabelaDeHoras.setFont(new Font("Tahoma", Font.BOLD, 18));
 		lblTabelaDeHoras.setBounds(412, 119, 324, 43);
 		contentPane.add(lblTabelaDeHoras);
-		
+
 		JLabel lblTabelaDeCustos = new JLabel("Tabela de custos");
 		lblTabelaDeCustos.setFont(new Font("Tahoma", Font.BOLD, 18));
 		lblTabelaDeCustos.setBounds(412, 326, 305, 43);
 		contentPane.add(lblTabelaDeCustos);
-		
+
 		JTextArea textDate = new JTextArea(getDate());
 		textDate.setBounds(20, 338, 211, 49);
 		contentPane.add(textDate);
 
-		
-
 	}
+
 	/**
-	 * Se o parametro por diferente do valor a se pagar por hora (custoHora) então 
-	 * Altera o valor a se pagar por hora
-	 * e atualiza a tabela "tabelaCusto" com os novos custos 
+	 * Se o parametro por diferente do valor a se pagar por hora (custoHora) então
+	 * Altera o valor a se pagar por hora e atualiza a tabela "tabelaCusto" com os
+	 * novos custos
 	 * 
 	 * @param novoCustoHora Representa o novo valor a se pagar por Hora
 	 */
 	private void setNovoCustoHora(double novoCustoHora) {
-		if(novoCustoHora == custoHora) return;
+		if (novoCustoHora == custoHora)
+			return;
 		int row = 0;
 		while (row < tabelaCusto.getRowCount()) {
 			double newValue = ((Number) tabelaCusto.getValueAt(row, 2)).doubleValue() * (novoCustoHora / custoHora);
@@ -184,13 +184,15 @@ public class Informacao extends JFrame {
 		}
 		custoHora = novoCustoHora;
 	}
+
 	/**
-	 * Dá return de uma String que contém todos os membros do projeto separados por \n 
+	 * Dá return de uma String que contém todos os membros do projeto separados por
+	 * \n
 	 * 
-	 * @return String 
+	 * @return String
 	 */
 	private String getMembers() {
-		
+
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		List<Member> members = trelloApi.getBoardMembers(boards.get(0).getId());
 		String membersList = "";
@@ -199,7 +201,7 @@ public class Informacao extends JFrame {
 		}
 		return membersList;
 	}
-	
+
 	/**
 	 * Este método dá return da data de início do projeto
 	 * 
@@ -212,25 +214,26 @@ public class Informacao extends JFrame {
 		Date dataInicio = projectCard.getDue();
 		return dataInicio.toString();
 	}
-	
+
 	/**
 	 * Este método dá return de uma String o Product Backlog
 	 * 
 	 * @return String
 	 */
 	private String getProductBacklog() {
-
 		String productBacklogList = "";
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		for (Board b : boards) {
+			productBacklogList += b.getName() + ":" + "\n";
 			List<TList> lists = trelloApi.getBoardLists(b.getId());
 			for (TList l : lists) {
-
 				if (!l.getName().contains("Planning") && !l.getName().contains("Review")
-						&& !l.getName().contains("Retrospective") && !l.getName().contains("Scrum")) {
+						&& !l.getName().contains("Retrospective") && !l.getName().contains("Scrum")
+						&& !l.getName().contains("Project") && !l.getName().contains("Sprints")
+						&& !l.getName().contains("Product Backlog")) {
 					List<Card> listCards = trelloApi.getListCards(l.getId());
 					for (Card c : listCards) {
-						productBacklogList += c.getName() + "\n";
+						productBacklogList += "-" + c.getName() + "\n";
 					}
 				}
 			}
@@ -239,8 +242,8 @@ public class Informacao extends JFrame {
 	}
 
 	/**
-	 * Vai ao trello e obtém as horas estimadas e utilizadas de cada membro por sprint
-	 * Armazenando-as numa lista de SprintHours
+	 * Vai ao trello e obtém as horas estimadas e utilizadas de cada membro por
+	 * sprint Armazenando-as numa lista de SprintHours
 	 */
 	private void getProjectTime() {
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
@@ -271,32 +274,36 @@ public class Informacao extends JFrame {
 									String[] doubles = dataText[2].split("/");
 									int control = 0;
 									while (control < sHours.get(control1).getMemberHoursInformationList().size()) {
-										if (sHours.get(control1).getMemberHoursInformationList().get(control).getUser().equals(user[1])) {
+										if (sHours.get(control1).getMemberHoursInformationList().get(control).getUser()
+												.equals(user[1])) {
 											break;
 										}
 										control++;
 									}
 									if (sHours.get(control1).getMemberHoursInformationList().size() == control) {
-										sHours.get(control1).getMemberHoursInformationList().add(new MemberHoursInformation(user[1]));
+										sHours.get(control1).getMemberHoursInformationList()
+												.add(new MemberHoursInformation(user[1]));
 									}
-									sHours.get(control1).getMemberHoursInformationList().get(control).addTime(Double.parseDouble(doubles[0]),
-											Double.parseDouble(doubles[1]));
+									sHours.get(control1).getMemberHoursInformationList().get(control)
+											.addTime(Double.parseDouble(doubles[0]), Double.parseDouble(doubles[1]));
 								} else {
 									String user = trelloApi.getActionMemberCreator(a.getId()).getUsername();
 									String[] doubles = dataText[1].split("/");
 
 									int control = 0;
 									while (control < sHours.get(control1).getMemberHoursInformationList().size()) {
-										if (sHours.get(control1).getMemberHoursInformationList().get(control).getUser().equals(user)) {
+										if (sHours.get(control1).getMemberHoursInformationList().get(control).getUser()
+												.equals(user)) {
 											break;
 										}
 										control++;
 									}
 									if (sHours.get(control1).getMemberHoursInformationList().size() == control) {
-										sHours.get(control1).getMemberHoursInformationList().add(new MemberHoursInformation(user));
+										sHours.get(control1).getMemberHoursInformationList()
+												.add(new MemberHoursInformation(user));
 									}
-									sHours.get(control1).getMemberHoursInformationList().get(control).addTime(Double.parseDouble(doubles[0]),
-											Double.parseDouble(doubles[1]));
+									sHours.get(control1).getMemberHoursInformationList().get(control)
+											.addTime(Double.parseDouble(doubles[0]), Double.parseDouble(doubles[1]));
 								}
 							}
 						}
@@ -305,6 +312,7 @@ public class Informacao extends JFrame {
 			}
 		}
 	}
+
 	/**
 	 * Dá return da conexao ao Trello
 	 * 
@@ -313,6 +321,7 @@ public class Informacao extends JFrame {
 	public Trello getTrelloApi() {
 		return trelloApi;
 	}
+
 	/**
 	 * Dá return de uma String que representa o user no trello do Utilizador
 	 * 
@@ -321,6 +330,7 @@ public class Informacao extends JFrame {
 	public String getTrelloUtilizador() {
 		return trelloUtilizador;
 	}
+
 	/**
 	 * Dá return da lista de SprintHours
 	 * 
@@ -329,13 +339,14 @@ public class Informacao extends JFrame {
 	public List<SprintHoursInformation> getSprintHours() {
 		return sHours;
 	}
+
 	/**
-	 * Cria uma tabela do tipo JTable com as horas previstas e utilizadas
-	 * por membro da equipe e por sprint e as horas previstas e utilizadas do projeto
-	 *  
+	 * Cria uma tabela do tipo JTable com as horas previstas e utilizadas por membro
+	 * da equipe e por sprint e as horas previstas e utilizadas do projeto
+	 * 
 	 * @param sprintHoursList Representa uma lista de SprintHours
 	 * 
-	 * @return JTable 
+	 * @return JTable
 	 */
 	private JTable CriarTabela(List<SprintHoursInformation> sprintHoursList) {
 		String[] colunas = { "Sprint", "User", "Horas previstas", "Horas usadas" };
@@ -371,13 +382,15 @@ public class Informacao extends JFrame {
 		tabela.setBackground(UIManager.getColor("Button.light"));
 		return tabela;
 	}
+
 	/**
-	 * Cria uma tabela do tipo JTable com os pagamentos por membro de equipe e por sprint e custo total do projeto
-	 *  
-	 * @param sprintHoursList Representa uma lista de SprintHours
-	 * @param custoHora Representa o valor a pagar por hora
+	 * Cria uma tabela do tipo JTable com os pagamentos por membro de equipe e por
+	 * sprint e custo total do projeto
 	 * 
-	 * @return JTable 
+	 * @param sprintHoursList Representa uma lista de SprintHours
+	 * @param custoHora       Representa o valor a pagar por hora
+	 * 
+	 * @return JTable
 	 */
 	private JTable criarTabela(List<SprintHoursInformation> sprintHoursList, double custoHora) {
 		String[] colunas = { "Sprint", "User", "Pagamento" };
