@@ -14,11 +14,7 @@ import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Date;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.List;
 import java.awt.Color;
 import javax.swing.JTextArea;
@@ -47,7 +43,6 @@ public class Informacao extends JFrame {
 	private JTable tabelaCusto;
 	private double custoHora = 20;
 
-	private String AttachmentsList = "";
 
 	/**
 	 * Create the frame. <<<<<<< HEAD
@@ -253,11 +248,10 @@ public class Informacao extends JFrame {
 	}
 
 	/**
-	 * Este método dá return da data de início do projeto
+	 * Este método dá return da data de fim do projeto
 	 * 
 	 * @return String
 	 */
-
 	private String getDate() {
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		List<Card> cards = trelloApi.getBoardCards(boards.get(0).getId());
@@ -272,7 +266,7 @@ public class Informacao extends JFrame {
 		List<Card> listCards = trelloApi.getListCards(lists.get(1).getId());
 		String sprintsduration = "";
 		for (Card c : listCards) {
-			sprintsduration += c.getDue() + "\n";
+			sprintsduration += c.getName() + ": " + c.getDue() + "\n";
 		}
 		return sprintsduration;
 	}
