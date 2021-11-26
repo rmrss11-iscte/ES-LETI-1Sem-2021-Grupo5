@@ -4,6 +4,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import org.apache.commons.io.IOUtils;
+import org.kohsuke.github.GHContent;
+import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 
 import com.julienvey.trello.Trello;
@@ -14,8 +17,14 @@ import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Date;
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Map;
 import java.awt.Color;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
@@ -26,23 +35,30 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import java.awt.event.MouseAdapter;
 
+import org.springframework.web.client.RestTemplate;
+
 public class Informacao extends JFrame {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5924931067800093425L;
-	private JPanel contentPane = new JPanel();
+	
 	private Trello trelloApi;
 	private String trelloUtilizador;
-
+	private String repositoryName;
+	private String repositoryOwner;
 	private GitHub gitHubApi;
+	
+	private JPanel contentPane = new JPanel();
 	private List<SprintHoursInformation> sHours = new ArrayList<SprintHoursInformation>();
 	private JTextField txtNovoCustohora = new JTextField();;
 	private JTable tabelaHoras;
 	private JTable tabelaCusto;
 	private double custoHora = 20;
 
+	
+	
 
 	/**
 	 * Create the frame. <<<<<<< HEAD
@@ -53,84 +69,87 @@ public class Informacao extends JFrame {
 	 * @throws IOException >>>>>>> refs/heads/main2
 	 */
 
-	public Informacao(Trello trelloApi, String trelloUtilizador, GitHub gitHubApi) throws IOException {
+	public Informacao(Trello trelloApi, String trelloUtilizador, GitHub gitHubApi,String repositoryOwner, String repositoryName) throws IOException {
 
 		this.trelloApi = trelloApi;
 		this.trelloUtilizador = trelloUtilizador;
 		this.gitHubApi = gitHubApi;
+		this.repositoryName = repositoryName;
+		this.repositoryOwner = repositoryOwner;
 
 		getProjectTime();
 
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
-		setBounds(100, 100, 952, 751);
+		setBounds(100, 100, 952, 865);
 		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
-		JLabel membersLabel = new JLabel("Membros do projeto:");
-		membersLabel.setFont(new Font("Tahoma", Font.BOLD, 18)); 
-		membersLabel.setBounds(10, 20, 200, 43);
-		contentPane.add(membersLabel);
+		JLabel lblMembers = new JLabel("Membros do projeto:");
+		lblMembers.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblMembers.setBounds(10, 20, 200, 43);
+		contentPane.add(lblMembers);
 
-		JTextArea membersDisplay = new JTextArea(getMembers());
-		membersLabel.setLabelFor(membersDisplay);
-		membersDisplay.setEditable(false);
-		membersDisplay.setBounds(20, 65, 120, 90);
-		contentPane.add(membersDisplay);
+		JTextArea jTextMembers = new JTextArea(getMembers());
+		lblMembers.setLabelFor(jTextMembers);
+		jTextMembers.setEditable(false);
+		jTextMembers.setBounds(20, 65, 150, 90);
+		contentPane.add(jTextMembers);
 
-		JLabel dataLabel = new JLabel("Data de Inicio:");
-		dataLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
-		dataLabel.setBounds(10, 160, 160, 30);
-		contentPane.add(dataLabel);
-		
-		JTextArea dataDisplay = new JTextArea(getDate()); 
-		dataLabel.setLabelFor(dataDisplay);
+		JLabel lblDataFinal = new JLabel("Data de Fim:");
+		lblDataFinal.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblDataFinal.setBounds(10, 160, 160, 30);
+		contentPane.add(lblDataFinal);
+
+		JTextArea dataDisplay = new JTextArea(getDate());
+		lblDataFinal.setLabelFor(dataDisplay);
 		dataDisplay.setEditable(false);
-		dataDisplay.setBounds(20, 190, 200, 20); 
+		dataDisplay.setBounds(20, 190, 200, 20);
 		contentPane.add(dataDisplay);
+
+		JLabel lblSprintsDuration = new JLabel("Duração de cada Sprint:");
+		lblSprintsDuration.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblSprintsDuration.setBounds(10, 225, 242, 34);
+		contentPane.add(lblSprintsDuration);
+
+		JTextArea jTextSprintsDuration = new JTextArea(getSprintsDuration());
+		lblSprintsDuration.setLabelFor(jTextSprintsDuration);
+		jTextSprintsDuration.setEditable(false);
+		jTextSprintsDuration.setBounds(20, 258, 253, 100);
+		contentPane.add(jTextSprintsDuration);
+
+		JLabel lblProductBacklog = new JLabel("Items do ProductBacklog:");
+		lblProductBacklog.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblProductBacklog.setBounds(10, 359, 263, 28);
+		contentPane.add(lblProductBacklog);
+
+		JScrollPane scrollPaneProductBackLog = new JScrollPane();
+		scrollPaneProductBackLog.setViewportBorder(null);
+		scrollPaneProductBackLog.setBounds(20, 387, 324, 179);
+		contentPane.add(scrollPaneProductBackLog);
 		
-		JLabel sprintsdurationLabel = new JLabel("Duração de cada Sprint:");
-		sprintsdurationLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
-		sprintsdurationLabel.setBounds(10, 225, 300, 53); 
-		contentPane.add(sprintsdurationLabel);
+				JTextArea jTextProductBacklog = new JTextArea(getProductBacklog());
+				jTextProductBacklog.setEditable(false);
+				scrollPaneProductBackLog.setViewportView(jTextProductBacklog);
+				lblProductBacklog.setLabelFor(jTextProductBacklog);
 
-		JTextArea sprintsdurationDisplay = new JTextArea(getSprintsDuration());
-		sprintsdurationLabel.setLabelFor(sprintsdurationDisplay);
-		sprintsdurationDisplay.setEditable(false);
-		sprintsdurationDisplay.setBounds(20, 270, 253, 100);
-		contentPane.add(sprintsdurationDisplay);
-
-		JLabel productBacklogLabel = new JLabel("Items do ProductBacklog:");
-		productBacklogLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
-		productBacklogLabel.setBounds(10, 409, 263, 28); 
-		contentPane.add(productBacklogLabel);
-
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setViewportBorder(null);
-		scrollPane.setBounds(20, 437, 274, 179); 
-		contentPane.add(scrollPane);
-
-		JTextArea productBacklogDisplay = new JTextArea(getProductBacklog());
-		scrollPane.setViewportView(productBacklogDisplay);
-		productBacklogLabel.setLabelFor(productBacklogDisplay);
-
-		JScrollPane scrollPane_custo = new JScrollPane();
-		scrollPane_custo.setBounds(444, 362, 445, 155);
-		contentPane.add(scrollPane_custo);
+		JScrollPane scrollPaneTabelaCusto = new JScrollPane();
+		scrollPaneTabelaCusto.setBounds(444, 308, 445, 155);
+		contentPane.add(scrollPaneTabelaCusto);
 		tabelaCusto = criarTabela(sHours, 20);
-		scrollPane_custo.setViewportView(tabelaCusto);
+		scrollPaneTabelaCusto.setViewportView(tabelaCusto);
 
 		JLabel lblCustoHora = new JLabel("Custo-Hora =             €");
 		lblCustoHora.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		lblCustoHora.setBounds(587, 538, 203, 24);
+		lblCustoHora.setBounds(587, 474, 203, 24);
 		contentPane.add(lblCustoHora);
 		txtNovoCustohora.setHorizontalAlignment(SwingConstants.CENTER);
 		txtNovoCustohora.setFont(new Font("Tahoma", Font.PLAIN, 18));
 
 		// txt Novo Custo-Hora
 		txtNovoCustohora.setText("20");
-		txtNovoCustohora.setBounds(699, 538, 67, 24);
+		txtNovoCustohora.setBounds(701, 474, 67, 24);
 		contentPane.add(txtNovoCustohora);
 		txtNovoCustohora.setColumns(10);
 
@@ -141,14 +160,14 @@ public class Informacao extends JFrame {
 				setNovoCustoHora(Double.parseDouble(txtNovoCustohora.getText()));
 			}
 		});
-		buttonApplyNovoCustoHora.setBounds(800, 538, 89, 24);
+		buttonApplyNovoCustoHora.setBounds(800, 474, 89, 24);
 		contentPane.add(buttonApplyNovoCustoHora);
 
-		JScrollPane scrollPane_Horas = new JScrollPane();
-		scrollPane_Horas.setBounds(444, 160, 445, 155);
-		contentPane.add(scrollPane_Horas);
+		JScrollPane scrollPaneTabelaHoras = new JScrollPane();
+		scrollPaneTabelaHoras.setBounds(444, 103, 445, 155);
+		contentPane.add(scrollPaneTabelaHoras);
 		tabelaHoras = CriarTabela(sHours);
-		scrollPane_Horas.setViewportView(tabelaHoras);
+		scrollPaneTabelaHoras.setViewportView(tabelaHoras);
 
 		JButton btnObterGraficoHoras = new JButton("Obter Gráficos das Horas de Trabalho");
 		btnObterGraficoHoras.addMouseListener(new MouseAdapter() {
@@ -158,7 +177,7 @@ public class Informacao extends JFrame {
 			}
 		});
 		btnObterGraficoHoras.setFont(new Font("Tahoma", Font.BOLD, 11));
-		btnObterGraficoHoras.setBounds(615, 573, 274, 43);
+		btnObterGraficoHoras.setBounds(615, 509, 274, 43);
 		contentPane.add(btnObterGraficoHoras);
 
 		JButton btnObterGraficoCustos = new JButton("Obter Gráficos dos Custos do Trabalho");
@@ -169,30 +188,52 @@ public class Informacao extends JFrame {
 			}
 		});
 		btnObterGraficoCustos.setFont(new Font("Tahoma", Font.BOLD, 11));
-		btnObterGraficoCustos.setBounds(615, 627, 274, 43);
+		btnObterGraficoCustos.setBounds(615, 563, 274, 43);
 		contentPane.add(btnObterGraficoCustos);
 
 		JLabel lblTabelaDeHoras = new JLabel("Tabela de horas previstas/usadas");
 		lblTabelaDeHoras.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblTabelaDeHoras.setBounds(412, 119, 324, 43);
+		lblTabelaDeHoras.setBounds(412, 65, 324, 43);
 		contentPane.add(lblTabelaDeHoras);
 
 		JLabel lblTabelaDeCustos = new JLabel("Tabela de custos");
 		lblTabelaDeCustos.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblTabelaDeCustos.setBounds(412, 326, 305, 43);
+		lblTabelaDeCustos.setBounds(412, 270, 305, 43);
 		contentPane.add(lblTabelaDeCustos);
 
 		JTextArea textDate = new JTextArea(getDate());
 		textDate.setBounds(20, 338, 211, 49);
 		contentPane.add(textDate);
 
+		JLabel lblProjectName = new JLabel(getNameofProject());
+		lblProjectName.setHorizontalAlignment(SwingConstants.CENTER);
+		lblProjectName.setFont(new Font("Felix Titling", Font.BOLD, 25));
+		lblProjectName.setBounds(221, 11, 575, 53);
+		contentPane.add(lblProjectName);
+		
+		JLabel lblREADME = new JLabel("Conteúdo do ficheiro README:");
+		lblREADME.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblREADME.setBounds(10, 577, 300, 30);
+		contentPane.add(lblREADME);
+		
+		JScrollPane scrollPaneREADME = new JScrollPane();
+		scrollPaneREADME.setViewportBorder(null);
+		scrollPaneREADME.setBounds(20, 607, 324, 179);
+		contentPane.add(scrollPaneREADME);
+		
+		
 
-		JLabel nameDisplay = new JLabel(getNameofProject());
-		nameDisplay.setHorizontalAlignment(SwingConstants.CENTER);
-		nameDisplay.setFont(new Font("Felix Titling", Font.BOLD, 25));
-		nameDisplay.setBounds(221, 11, 575, 53);
-		contentPane.add(nameDisplay);
-
+		try {
+			JTextArea jTextREADME = new JTextArea(getREADME());
+			jTextREADME.setEditable(false);
+			scrollPaneREADME.setViewportView(jTextREADME);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 	}
 
@@ -257,9 +298,9 @@ public class Informacao extends JFrame {
 		List<Card> cards = trelloApi.getBoardCards(boards.get(0).getId());
 		Card projectCard = trelloApi.getBoardCard(boards.get(0).getId(), cards.get(0).getId());
 		Date dataInicio = projectCard.getDue();
-		return dataInicio.toString(); 
+		return dataInicio.toString();
 	}
-	
+
 	private String getSprintsDuration() {
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		List<TList> lists = trelloApi.getBoardLists(boards.get(0).getId());
@@ -478,5 +519,49 @@ public class Informacao extends JFrame {
 		return tabela;
 
 	}
+	
+	/**
+	 * Este método dá return do conteúdo no ficheiro README.md
+	 * presente na branch 'main' do repositório GitHub
+	 * 
+	 * @return String
+	 */
+	
+	private String getREADME() throws IOException, URISyntaxException {
+		
+		String readMEContent ="";
+		
+		/*
+		 * Call GitHub REST API - https://developer.github.com/v3/repos/contents/
+		 * 
+		 * Using Spring's RestTemplate to simplify REST call. Any other REST client
+		 * library can be used here.
+		 */
+		RestTemplate restTemplate = new RestTemplate();
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		List<Map> response = restTemplate.getForObject(
+				"https://api.github.com/repos/{owner}/{repo}/contents?ref={branch}", List.class, repositoryOwner,
+				repositoryName, "main");
 
+		// Iterate through list of file metadata from response.
+		for (@SuppressWarnings("rawtypes") Map fileMetaData : response) {
+
+			// Get file name & raw file download URL from response.
+			String downloadUrl = (String) fileMetaData.get("download_url");
+
+			// We will only fetch read me file for this example.
+			if (downloadUrl != null && downloadUrl.contains("README")) {
+				/*
+				 * Get file content as string
+				 * 
+				 * Using Apache commons IO to read content from the remote URL. Any other HTTP
+				 * client library can be used here.
+				 */
+				String fileContent = IOUtils.toString(new URI(downloadUrl), Charset.defaultCharset());
+				readMEContent += fileContent;
+			}
+
+		}
+		return readMEContent;
+	}
 }
