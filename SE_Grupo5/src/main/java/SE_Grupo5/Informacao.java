@@ -11,6 +11,7 @@ import com.julienvey.trello.domain.*;
 
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,8 +34,9 @@ public class Informacao extends JFrame {
 
 	/**
 	 * Create the frame.
+	 * @throws IOException 
 	 */
-	public Informacao(Trello trelloApi, String trelloUtilizador, GitHub gitHubApi) {
+	public Informacao(Trello trelloApi, String trelloUtilizador, GitHub gitHubApi) throws IOException {
 
 		this.trelloApi = trelloApi;
 		this.trelloUtilizador = trelloUtilizador;
@@ -83,6 +85,13 @@ public class Informacao extends JFrame {
 		JScrollPane scrollPane = CriarTabela(sHours);
 		scrollPane.setBounds(562, 45, 445, 152);
 		contentPane.add(scrollPane);
+
+		JScrollPane LinksR = new JScrollPane();
+		LinksR.setBounds(471, 360, 221, 190);
+		contentPane.add(LinksR);
+
+		JTextArea textos = new JTextArea(getAttachList());
+		LinksR.setViewportView(textos);
 
 		criarGraficos();
 
@@ -207,6 +216,28 @@ public class Informacao extends JFrame {
 			}
 		}
 	}
+	String AttachmentsList = "";
+	private String getAttachList() throws IOException {
+
+		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
+
+		for(Board b: boards) {
+			List<Card> cards= trelloApi.getBoardCards(b.getId());
+			for(Card c : cards) {
+				List<Attachment> listAttach = trelloApi.getCardAttachments(c.getId());
+				for(Attachment a: listAttach) {
+					if(a.getUrl().contains("Sprint"))
+					AttachmentsList = AttachmentsList + a.getUrl()+"\n";
+
+				}
+			}
+		}
+
+
+		return AttachmentsList;
+	}
+	
+	
 
 	public Trello getTrelloApi() {
 		return trelloApi;
