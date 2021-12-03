@@ -63,6 +63,8 @@ public class Informacao extends JFrame {
 
 		getProjectTime();
 		getActivitiesHoursCost();
+		notgetActivitiesHoursCost();
+		
 
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		setBounds(100, 100, 952, 751);
@@ -404,6 +406,9 @@ public class Informacao extends JFrame {
 				}
 			}
 		}
+		
+		
+		
 
 		List<MemberHoursInformation> listamemberhours = new ArrayList<MemberHoursInformation>();
 		for (Card card : lista) {
@@ -465,6 +470,110 @@ public class Informacao extends JFrame {
 
 		}
 		String retorno = "\tNeste projeto foram originados " + lista.size() + " artifactos, \ngastando-se " + spentTime
+				+ " horas, o que dá um custo total de: " + spentTime * custoHora + " euros\n" + info;
+		System.out.println(retorno);
+		return retorno;
+	}
+	
+	
+	private String notgetActivitiesHoursCost() {
+		List<Card> lista = new ArrayList<Card>();
+		List<String[]> listauserartifactos = new ArrayList<String[]>();
+		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
+		for (Board b : boards) {
+			List<Card> cards = b.fetchCards();
+			for (Card c : cards) {
+				List<Label> labels = c.getLabels();
+				for (Label l : labels) {
+					if (l.getColor().equals("blue")) {
+						lista.add(c);
+						List<Member> listamembros = trelloApi.getCardMembers(c.getId());
+						for (Member m : listamembros) {
+							int control = 0;
+							while (control < listauserartifactos.size()) {
+								if (listauserartifactos.get(control)[0].equals(m.getUsername())) {
+									int tempo = Integer.parseInt(listauserartifactos.get(control)[1]);
+									tempo++;
+									listauserartifactos.get(control)[1] = String.valueOf(tempo);
+									break;
+								}
+								control++;
+							}
+							if (control == listauserartifactos.size()) {
+								String[] vetor = { m.getUsername(), "1" };
+								listauserartifactos.add(vetor);
+							}
+
+						}
+
+					}
+				}
+			}
+		}
+		
+		
+		
+
+		List<MemberHoursInformation> listamemberhours = new ArrayList<MemberHoursInformation>();
+		for (Card card : lista) {
+			List<Action> listaacoes = trelloApi.getCardActions(card.getId());
+			for (Action a : listaacoes) {
+				if (a.getType().matches("commentCard")) {
+					if (a.getData().getText().contains("plus!")) {
+						String[] dataText = a.getData().getText().split(" ");
+						if (dataText[1].contains("@")) {
+							String[] user = dataText[1].split("@");
+							String[] doubles = dataText[2].split("/");
+							int control = 0;
+							while (control < listamemberhours.size()) {
+								if (listamemberhours.get(control).getUser().equals(user[1])) {
+									break;
+
+								}
+								control++;
+							}
+							if (listamemberhours.size() == control) {
+
+								listamemberhours.add(new MemberHoursInformation(user[1]));
+							}
+							listamemberhours.get(control).addTime(Double.parseDouble(doubles[0]),
+									Double.parseDouble(doubles[1]));
+						} else {
+							String user = trelloApi.getActionMemberCreator(a.getId()).getUsername();
+							String[] doubles = dataText[1].split("/");
+							int control = 0;
+							while (control < listamemberhours.size()) {
+								if (listamemberhours.get(control).getUser().equals(user)) {
+									break;
+								}
+								control++;
+							}
+							if (listamemberhours.size() == control) {
+								listamemberhours.add(new MemberHoursInformation(user));
+							}
+							listamemberhours.get(control).addTime(Double.parseDouble(doubles[0]),
+									Double.parseDouble(doubles[1]));
+						}
+					}
+				}
+			}
+		}
+		String info = "";
+		int spentTime = 0;
+		for (MemberHoursInformation m : listamemberhours) {
+			for (String[] s : listauserartifactos) {
+				if (m.getUser().equals(s[0])) {
+					info += ("\tO utilizador " + m.getUser() + " originou " + s[1]
+							+ " atividades que não deram origem a artifactos no repositório \ne gastou " + m.getSpentTime() + " horas "
+							+ " o que dá um custo total de: " + m.getSpentTime() * custoHora + " euros\n");
+					spentTime += m.getSpentTime();
+					break;
+				}
+
+			}
+
+		}
+		String retorno = "\tNeste projeto foram originadas " + lista.size() +  " atividades que não deram origem a artifactos, \ngastando-se " + spentTime
 				+ " horas, o que dá um custo total de: " + spentTime * custoHora + " euros\n" + info;
 		System.out.println(retorno);
 		return retorno;
