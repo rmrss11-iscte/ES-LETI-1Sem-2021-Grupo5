@@ -59,8 +59,6 @@ public class Informacao extends JFrame {
 	private double custoHora = 20;
 
 
-
-
 	/**
 <<<<<<< HEAD
 	 * Create the frame.
@@ -69,10 +67,17 @@ public class Informacao extends JFrame {
 	 * Create the frame. <<<<<<< HEAD
 	 * 
 	 * @param trelloApi        Representa a conexão ao trello
-	 * @param trelloUtilizador Representa o user no trello do Utilizador
+	 * @param trelloUtilizador Representa o user no trello do Utilizador <<<<<<<
+	 *                         HEAD
 	 * @param gitHubApi        Representa a conexão ao GitHub =======
+<<<<<<< HEAD
 	 * @throws IOException >>>>>>> refs/heads/main2
 >>>>>>> refs/heads/main
+=======
+	 * @param gitHubApi        Representa a conexão ao GitHub =======
+	 * @throws IOException >>>>>>> refs/heads/main2 >>>>>>> branch 'main' of
+	 *                     https://github.com/rmrss11-iscte/ES-LETI-1Sem-2021-Grupo5.git
+>>>>>>> refs/heads/AtividadesnaoGeramArtefactos
 	 */
 
 
@@ -86,6 +91,9 @@ public class Informacao extends JFrame {
 		this.repositoryOwner = repositoryOwner;
 
 		getProjectTime();
+		getActivitiesHoursCost();
+		notgetActivitiesHoursCost();
+		
 
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		setBounds(100, 100, 952, 865);
@@ -94,16 +102,19 @@ public class Informacao extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
+
 		JLabel lblMembers = new JLabel("Membros do projeto:");
 		lblMembers.setFont(new Font("Tahoma", Font.BOLD, 18));
 		lblMembers.setBounds(10, 20, 200, 43);
 		contentPane.add(lblMembers);
+
 
 		JTextArea jTextMembers = new JTextArea(getMembers());
 		lblMembers.setLabelFor(jTextMembers);
 		jTextMembers.setEditable(false);
 		jTextMembers.setBounds(20, 65, 150, 90);
 		contentPane.add(jTextMembers);
+
 
 		JLabel lblDataFinal = new JLabel("Data de Fim:");
 		lblDataFinal.setFont(new Font("Tahoma", Font.BOLD, 18));
@@ -112,10 +123,10 @@ public class Informacao extends JFrame {
 
 		JTextArea dataDisplay = new JTextArea(getDate());
 		lblDataFinal.setLabelFor(dataDisplay);
+
 		dataDisplay.setEditable(false);
 		dataDisplay.setBounds(20, 190, 200, 20);
 		contentPane.add(dataDisplay);
-
 		JLabel lblSprintsDuration = new JLabel("Duração de cada Sprint:");
 		lblSprintsDuration.setFont(new Font("Tahoma", Font.BOLD, 18));
 		lblSprintsDuration.setBounds(10, 225, 242, 34);
@@ -141,20 +152,24 @@ public class Informacao extends JFrame {
 		lblProductBacklog.setBounds(10, 359, 263, 28);
 		contentPane.add(lblProductBacklog);
 	
-
 		JScrollPane scrollPaneProductBackLog = new JScrollPane();
 		scrollPaneProductBackLog.setViewportBorder(null);
 		scrollPaneProductBackLog.setBounds(20, 387, 324, 179);
 		contentPane.add(scrollPaneProductBackLog);
+
 
 		JTextArea jTextProductBacklog = new JTextArea(getProductBacklog());
 		jTextProductBacklog.setEditable(false);
 		scrollPaneProductBackLog.setViewportView(jTextProductBacklog);
 		lblProductBacklog.setLabelFor(jTextProductBacklog);
 
+
+
 		JScrollPane scrollPaneTabelaCusto = new JScrollPane();
 		scrollPaneTabelaCusto.setBounds(444, 308, 445, 155);
 		contentPane.add(scrollPaneTabelaCusto);
+
+
 		tabelaCusto = criarTabela(sHours, 20);
 		scrollPaneTabelaCusto.setViewportView(tabelaCusto);
 
@@ -223,6 +238,7 @@ public class Informacao extends JFrame {
 		textDate.setBounds(20, 338, 211, 49);
 		contentPane.add(textDate);
 
+
 		JLabel lblProjectName = new JLabel(getNameofProject());
 		lblProjectName.setHorizontalAlignment(SwingConstants.CENTER);
 		lblProjectName.setFont(new Font("Felix Titling", Font.BOLD, 25));
@@ -233,6 +249,10 @@ public class Informacao extends JFrame {
 		lblREADME.setFont(new Font("Tahoma", Font.BOLD, 18));
 		lblREADME.setBounds(10, 577, 300, 30);
 		contentPane.add(lblREADME);
+
+	
+
+
 
 		JScrollPane scrollPaneREADME = new JScrollPane();
 		scrollPaneREADME.setViewportBorder(null);
@@ -252,6 +272,7 @@ public class Informacao extends JFrame {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+
 
 	}
 
@@ -336,18 +357,19 @@ public class Informacao extends JFrame {
 	 * @return String
 	 */
 	private String getProductBacklog() {
-
 		String productBacklogList = "";
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		for (Board b : boards) {
+			productBacklogList += b.getName() + ":" + "\n";
 			List<TList> lists = trelloApi.getBoardLists(b.getId());
 			for (TList l : lists) {
-
 				if (!l.getName().contains("Planning") && !l.getName().contains("Review")
-						&& !l.getName().contains("Retrospective") && !l.getName().contains("Scrum")) {
+						&& !l.getName().contains("Retrospective") && !l.getName().contains("Scrum")
+						&& !l.getName().contains("Project") && !l.getName().contains("Sprints")
+						&& !l.getName().contains("Product Backlog")) {
 					List<Card> listCards = trelloApi.getListCards(l.getId());
 					for (Card c : listCards) {
-						productBacklogList += c.getName() + "\n";
+						productBacklogList += "-" + c.getName() + "\n";
 					}
 				}
 			}
@@ -448,6 +470,213 @@ public class Informacao extends JFrame {
 	}
 
 
+
+	private String getActivitiesHoursCost() {
+		List<Card> lista = new ArrayList<Card>();
+		List<String[]> listauserartifactos = new ArrayList<String[]>();
+		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
+		for (Board b : boards) {
+			List<Card> cards = b.fetchCards();
+			for (Card c : cards) {
+				List<Label> labels = c.getLabels();
+				for (Label l : labels) {
+					if (l.getColor().equals("purple")) {
+						lista.add(c);
+						List<Member> listamembros = trelloApi.getCardMembers(c.getId());
+						for (Member m : listamembros) {
+							int control = 0;
+							while (control < listauserartifactos.size()) {
+								if (listauserartifactos.get(control)[0].equals(m.getUsername())) {
+									int tempo = Integer.parseInt(listauserartifactos.get(control)[1]);
+									tempo++;
+									listauserartifactos.get(control)[1] = String.valueOf(tempo);
+									break;
+								}
+								control++;
+							}
+							if (control == listauserartifactos.size()) {
+								String[] vetor = { m.getUsername(), "1" };
+								listauserartifactos.add(vetor);
+							}
+
+						}
+
+					}
+				}
+			}
+		}
+		
+		
+		
+
+		List<MemberHoursInformation> listamemberhours = new ArrayList<MemberHoursInformation>();
+		for (Card card : lista) {
+			List<Action> listaacoes = trelloApi.getCardActions(card.getId());
+			for (Action a : listaacoes) {
+				if (a.getType().matches("commentCard")) {
+					if (a.getData().getText().contains("plus!")) {
+						String[] dataText = a.getData().getText().split(" ");
+						if (dataText[1].contains("@")) {
+							String[] user = dataText[1].split("@");
+							String[] doubles = dataText[2].split("/");
+							int control = 0;
+							while (control < listamemberhours.size()) {
+								if (listamemberhours.get(control).getUser().equals(user[1])) {
+									break;
+
+								}
+								control++;
+							}
+							if (listamemberhours.size() == control) {
+
+								listamemberhours.add(new MemberHoursInformation(user[1]));
+							}
+							listamemberhours.get(control).addTime(Double.parseDouble(doubles[0]),
+									Double.parseDouble(doubles[1]));
+						} else {
+							String user = trelloApi.getActionMemberCreator(a.getId()).getUsername();
+							String[] doubles = dataText[1].split("/");
+							int control = 0;
+							while (control < listamemberhours.size()) {
+								if (listamemberhours.get(control).getUser().equals(user)) {
+									break;
+								}
+								control++;
+							}
+							if (listamemberhours.size() == control) {
+								listamemberhours.add(new MemberHoursInformation(user));
+							}
+							listamemberhours.get(control).addTime(Double.parseDouble(doubles[0]),
+									Double.parseDouble(doubles[1]));
+						}
+					}
+				}
+			}
+		}
+		String info = "";
+		int spentTime = 0;
+		for (MemberHoursInformation m : listamemberhours) {
+			for (String[] s : listauserartifactos) {
+				if (m.getUser().equals(s[0])) {
+					info += ("\tO utilizador " + m.getUser() + " originou " + s[1]
+							+ " artifactos no repositório \ne gastou " + m.getSpentTime() + " horas "
+							+ " o que dá um custo total de: " + m.getSpentTime() * custoHora + " euros\n");
+					spentTime += m.getSpentTime();
+					break;
+				}
+
+			}
+
+		}
+		String retorno = "\tNeste projeto foram originados " + lista.size() + " artifactos, \ngastando-se " + spentTime
+				+ " horas, o que dá um custo total de: " + spentTime * custoHora + " euros\n" + info;
+		System.out.println(retorno);
+		return retorno;
+	}
+	
+	
+	private String notgetActivitiesHoursCost() {
+		List<Card> lista = new ArrayList<Card>();
+		List<String[]> listauserartifactos = new ArrayList<String[]>();
+		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
+		for (Board b : boards) {
+			List<Card> cards = b.fetchCards();
+			for (Card c : cards) {
+				List<Label> labels = c.getLabels();
+				for (Label l : labels) {
+					if (l.getColor().equals("blue")) {
+						lista.add(c);
+						List<Member> listamembros = trelloApi.getCardMembers(c.getId());
+						for (Member m : listamembros) {
+							int control = 0;
+							while (control < listauserartifactos.size()) {
+								if (listauserartifactos.get(control)[0].equals(m.getUsername())) {
+									int tempo = Integer.parseInt(listauserartifactos.get(control)[1]);
+									tempo++;
+									listauserartifactos.get(control)[1] = String.valueOf(tempo);
+									break;
+								}
+								control++;
+							}
+							if (control == listauserartifactos.size()) {
+								String[] vetor = { m.getUsername(), "1" };
+								listauserartifactos.add(vetor);
+							}
+
+						}
+
+					}
+				}
+			}
+		}
+		
+		
+		
+
+		List<MemberHoursInformation> listamemberhours = new ArrayList<MemberHoursInformation>();
+		for (Card card : lista) {
+			List<Action> listaacoes = trelloApi.getCardActions(card.getId());
+			for (Action a : listaacoes) {
+				if (a.getType().matches("commentCard")) {
+					if (a.getData().getText().contains("plus!")) {
+						String[] dataText = a.getData().getText().split(" ");
+						if (dataText[1].contains("@")) {
+							String[] user = dataText[1].split("@");
+							String[] doubles = dataText[2].split("/");
+							int control = 0;
+							while (control < listamemberhours.size()) {
+								if (listamemberhours.get(control).getUser().equals(user[1])) {
+									break;
+
+								}
+								control++;
+							}
+							if (listamemberhours.size() == control) {
+
+								listamemberhours.add(new MemberHoursInformation(user[1]));
+							}
+							listamemberhours.get(control).addTime(Double.parseDouble(doubles[0]),
+									Double.parseDouble(doubles[1]));
+						} else {
+							String user = trelloApi.getActionMemberCreator(a.getId()).getUsername();
+							String[] doubles = dataText[1].split("/");
+							int control = 0;
+							while (control < listamemberhours.size()) {
+								if (listamemberhours.get(control).getUser().equals(user)) {
+									break;
+								}
+								control++;
+							}
+							if (listamemberhours.size() == control) {
+								listamemberhours.add(new MemberHoursInformation(user));
+							}
+							listamemberhours.get(control).addTime(Double.parseDouble(doubles[0]),
+									Double.parseDouble(doubles[1]));
+						}
+					}
+				}
+			}
+		}
+		String info = "";
+		int spentTime = 0;
+		for (MemberHoursInformation m : listamemberhours) {
+			for (String[] s : listauserartifactos) {
+				if (m.getUser().equals(s[0])) {
+					info += ("\tO utilizador " + m.getUser() + " originou " + s[1]
+							+ " atividades que não deram origem a artifactos no repositório \ne gastou " + m.getSpentTime() + " horas "
+							+ " o que dá um custo total de: " + m.getSpentTime() * custoHora + " euros\n");
+					spentTime += m.getSpentTime();
+					break;
+				}
+
+			}
+
+		}
+		String retorno = "\tNeste projeto foram originadas " + lista.size() +  " atividades que não deram origem a artifactos, \ngastando-se " + spentTime
+				+ " horas, o que dá um custo total de: " + spentTime * custoHora + " euros\n" + info;
+		System.out.println(retorno);
+		return retorno;
+	}
 
 	/**
 	 * Dá return da conexao ao Trello
