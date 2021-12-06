@@ -10,9 +10,8 @@ public class App
     	EventQueue.invokeLater(new Runnable() {
     		public void run() {
     			try {
-    				JanelaInicial j = new JanelaInicial();
+    				MenuInicial j = new MenuInicial();
     				j.getFrame().setVisible(true);
-    				
     				
     			} catch (Exception e) {
     				e.printStackTrace();
