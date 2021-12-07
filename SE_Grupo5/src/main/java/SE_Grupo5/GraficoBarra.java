@@ -44,24 +44,17 @@ public class GraficoBarra extends JFrame{
 		setLocationRelativeTo(null);
 		add(BorderLayout.CENTER,abas);
 		
-		List<GraficoBarraData> projetoData = new ArrayList<GraficoBarraData>();
-		projetoData = getProjectHorasGraficoData(sprintHoursList);
+		List<GraficoBarraData> projetoData = getProjectHorasGraficoData(sprintHoursList);
 		abas.addTab("Projeto", criarGrafico("Horas de trabalho usadas no Projeto", xLabel, yLabel, projetoData));
 		
 		for(SprintHoursInformation sprintHours : sprintHoursList) {
 			if (sprintHours.hasSpentTime()) {
-				
-				
-				List<GraficoBarraData> sprintEstimateTimeData = new ArrayList<GraficoBarraData>();
-				List<GraficoBarraData> sprintSpentTimeData = new ArrayList<GraficoBarraData>();
-				sprintEstimateTimeData = getSprintEstimateTimeGraficoData(sprintHours);
-				sprintSpentTimeData = getSprintSpentTimeGraficoData(sprintHours);
 				JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 				splitPane.setDividerSize(1);
 				splitPane.setDividerLocation(500);
 				splitPane.setLeftComponent(criarGrafico(sprintHours.getSprint() + " -Horas Estimadas", xLabel, yLabel,
-						sprintEstimateTimeData));
-				splitPane.setRightComponent(criarGrafico(sprintHours.getSprint() + " -Horas Usadas", xLabel, yLabel, sprintSpentTimeData));
+						getSprintEstimateTimeGraficoData(sprintHours)));
+				splitPane.setRightComponent(criarGrafico(sprintHours.getSprint() + " -Horas Usadas", xLabel, yLabel, getSprintSpentTimeGraficoData(sprintHours)));
 				abas.addTab(sprintHours.getSprint(),splitPane);
 			}
 		}
@@ -86,15 +79,11 @@ public class GraficoBarra extends JFrame{
 		setLocationRelativeTo(null);
 		add(BorderLayout.CENTER,abas);
 		
-		List<GraficoBarraData> projetoData = new ArrayList<GraficoBarraData>();
-		projetoData = getProjectPagamentoGraficoData(sprintHoursList,custoHora);
-		abas.addTab("Projeto", criarGrafico("Pagamento Total", xLabel, yLabel, projetoData));
+		abas.addTab("Projeto", criarGrafico("Pagamento Total", xLabel, yLabel, getProjectPagamentoGraficoData(sprintHoursList,custoHora)));
 		
 		for(SprintHoursInformation sprintHours : sprintHoursList) {
 			if (sprintHours.hasSpentTime()) {
-				List<GraficoBarraData> sprintPagamentoData = new ArrayList<GraficoBarraData>();
-				sprintPagamentoData = getSprintPagamentoGraficoData(sprintHours,custoHora);
-				abas.addTab(sprintHours.getSprint(),criarGrafico(sprintHours.getSprint(), xLabel, yLabel, sprintPagamentoData));
+				abas.addTab(sprintHours.getSprint(),criarGrafico(sprintHours.getSprint(), xLabel, yLabel, getSprintPagamentoGraficoData(sprintHours,custoHora)));
 			}
 		}
 		

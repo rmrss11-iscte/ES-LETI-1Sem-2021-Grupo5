@@ -18,17 +18,17 @@ import java.io.IOException;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Date;
-import java.io.BufferedInputStream;
 
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -45,6 +45,8 @@ public class Informacao extends JFrame {
 	 */
 	private static final long serialVersionUID = 5924931067800093425L;
 
+	JTabbedPane abas = new JTabbedPane();
+	
 	private Trello trelloApi;
 	private String trelloUtilizador;
 	private String repositoryName;
@@ -52,6 +54,7 @@ public class Informacao extends JFrame {
 	private GitHub gitHubApi;
 
 	private JPanel contentPane = new JPanel();
+	private JPanel contentPane2 = new JPanel();
 	private List<SprintHoursInformation> sHours = new ArrayList<SprintHoursInformation>();
 	private JTextField txtNovoCustohora = new JTextField();;
 	private JTable tabelaHoras;
@@ -60,30 +63,19 @@ public class Informacao extends JFrame {
 
 
 	/**
-<<<<<<< HEAD
 	 * Create the frame.
 	 * @throws IOException 
-=======
-	 * Create the frame. <<<<<<< HEAD
 	 * 
-	 * @param trelloApi        Representa a conexão ao trello
-	 * @param trelloUtilizador Representa o user no trello do Utilizador <<<<<<<
-	 *                         HEAD
-	 * @param gitHubApi        Representa a conexão ao GitHub =======
-<<<<<<< HEAD
-	 * @throws IOException >>>>>>> refs/heads/main2
->>>>>>> refs/heads/main
-=======
-	 * @param gitHubApi        Representa a conexão ao GitHub =======
-	 * @throws IOException >>>>>>> refs/heads/main2 >>>>>>> branch 'main' of
-	 *                     https://github.com/rmrss11-iscte/ES-LETI-1Sem-2021-Grupo5.git
->>>>>>> refs/heads/AtividadesnaoGeramArtefactos
+	 * @param trelloApi        	Representa a conexão ao trello
+	 * @param trelloUtilizador 	Representa o user no trello do Utilizador
+	 * @param gitHubApi			Representa a conexão ao GitHub 
+	 * @param repositoryOwner	Representa o nome do dono do repositório GitHub
+	 * @param repositoryName	Representa o nome do repositório GitHub	
 	 */
 
 
 	public Informacao(Trello trelloApi, String trelloUtilizador, GitHub gitHubApi,String repositoryOwner, String repositoryName) throws IOException {
-
-
+		
 		this.trelloApi = trelloApi;
 		this.trelloUtilizador = trelloUtilizador;
 		this.gitHubApi = gitHubApi;
@@ -91,82 +83,85 @@ public class Informacao extends JFrame {
 		this.repositoryOwner = repositoryOwner;
 
 		getProjectTime();
-		getActivitiesHoursCost();
-		notgetActivitiesHoursCost();
-		
 
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
-		setBounds(100, 100, 952, 865);
+		setBounds(100, 100, 900, 750);
+		getContentPane().add(BorderLayout.CENTER,abas);
 		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		contentPane2.setBackground(Color.WHITE);
+		contentPane2.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane2.setLayout(null);
+		
+		abas.addTab("Informação Principal",contentPane);
+		abas.addTab("Inf. Adicional",contentPane2);
 
 
 		JLabel lblMembers = new JLabel("Membros do projeto:");
 		lblMembers.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblMembers.setBounds(10, 20, 200, 43);
+		lblMembers.setBounds(10, 62, 200, 43);
 		contentPane.add(lblMembers);
 
 
 		JTextArea jTextMembers = new JTextArea(getMembers());
 		lblMembers.setLabelFor(jTextMembers);
 		jTextMembers.setEditable(false);
-		jTextMembers.setBounds(20, 65, 150, 90);
+		jTextMembers.setBounds(20, 105, 232, 91);
 		contentPane.add(jTextMembers);
 
 
 		JLabel lblDataFinal = new JLabel("Data de Fim:");
 		lblDataFinal.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblDataFinal.setBounds(10, 160, 160, 30);
+		lblDataFinal.setBounds(10, 207, 160, 30);
 		contentPane.add(lblDataFinal);
 
-		JTextArea dataDisplay = new JTextArea(getDate());
-		lblDataFinal.setLabelFor(dataDisplay);
-
-		dataDisplay.setEditable(false);
-		dataDisplay.setBounds(20, 190, 200, 20);
-		contentPane.add(dataDisplay);
+		JTextArea jTextDataFinal = new JTextArea(getDate());
+		lblDataFinal.setLabelFor(jTextDataFinal);
+		jTextDataFinal.setEditable(false);
+		jTextDataFinal.setBounds(20, 238, 232, 20);
+		contentPane.add(jTextDataFinal);
+		
 		JLabel lblSprintsDuration = new JLabel("Duração de cada Sprint:");
 		lblSprintsDuration.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblSprintsDuration.setBounds(10, 225, 242, 34);
+		lblSprintsDuration.setBounds(10, 274, 242, 34);
 		contentPane.add(lblSprintsDuration);
 
 		JTextArea jTextSprintsDuration = new JTextArea(getSprintsDuration());
 		lblSprintsDuration.setLabelFor(jTextSprintsDuration);
 		jTextSprintsDuration.setEditable(false);
-		jTextSprintsDuration.setBounds(20, 258, 253, 100);
+		jTextSprintsDuration.setBounds(20, 310, 290, 100);
 		contentPane.add(jTextSprintsDuration);
 
 	
-		JScrollPane LinksR = new JScrollPane();
-		LinksR.setBounds(471, 360, 221, 190);
-		contentPane.add(LinksR);
+		JScrollPane scrollPaneLinksTexts = new JScrollPane();
+		scrollPaneLinksTexts.setBounds(30, 265, 389, 165);
+		contentPane2.add(scrollPaneLinksTexts);
 
-		JTextArea textos = new JTextArea(getAttachList());
-		LinksR.setViewportView(textos);
+		JTextArea jTextLinksTexts = new JTextArea(getAttachList());
+		scrollPaneLinksTexts.setViewportView(jTextLinksTexts);
 
 		
-				JLabel lblProductBacklog = new JLabel("Items do ProductBacklog:");
+		JLabel lblProductBacklog = new JLabel("Items do ProductBacklog:");
 		lblProductBacklog.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblProductBacklog.setBounds(10, 359, 263, 28);
-		contentPane.add(lblProductBacklog);
+		lblProductBacklog.setBounds(20, 11, 334, 28);
+		contentPane2.add(lblProductBacklog);
 	
 		JScrollPane scrollPaneProductBackLog = new JScrollPane();
 		scrollPaneProductBackLog.setViewportBorder(null);
-		scrollPaneProductBackLog.setBounds(20, 387, 324, 179);
-		contentPane.add(scrollPaneProductBackLog);
-
-
-		JTextArea jTextProductBacklog = new JTextArea(getProductBacklog());
-		jTextProductBacklog.setEditable(false);
-		scrollPaneProductBackLog.setViewportView(jTextProductBacklog);
-		lblProductBacklog.setLabelFor(jTextProductBacklog);
+		scrollPaneProductBackLog.setBounds(30, 50, 389, 165);
+		contentPane2.add(scrollPaneProductBackLog);
+		
+		
+				JTextArea jTextProductBacklog = new JTextArea(getProductBacklog());
+				scrollPaneProductBackLog.setViewportView(jTextProductBacklog);
+				jTextProductBacklog.setEditable(false);
+				lblProductBacklog.setLabelFor(jTextProductBacklog);
 
 
 
 		JScrollPane scrollPaneTabelaCusto = new JScrollPane();
-		scrollPaneTabelaCusto.setBounds(444, 308, 445, 155);
+		scrollPaneTabelaCusto.setBounds(422, 324, 445, 174);
 		contentPane.add(scrollPaneTabelaCusto);
 
 
@@ -175,14 +170,13 @@ public class Informacao extends JFrame {
 
 		JLabel lblCustoHora = new JLabel("Custo-Hora =             €");
 		lblCustoHora.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		lblCustoHora.setBounds(587, 474, 203, 24);
+		lblCustoHora.setBounds(574, 509, 203, 24);
 		contentPane.add(lblCustoHora);
+		
 		txtNovoCustohora.setHorizontalAlignment(SwingConstants.CENTER);
 		txtNovoCustohora.setFont(new Font("Tahoma", Font.PLAIN, 18));
-
-		// txt Novo Custo-Hora
 		txtNovoCustohora.setText("20");
-		txtNovoCustohora.setBounds(701, 474, 67, 24);
+		txtNovoCustohora.setBounds(688, 509, 67, 24);
 		contentPane.add(txtNovoCustohora);
 		txtNovoCustohora.setColumns(10);
 
@@ -193,11 +187,11 @@ public class Informacao extends JFrame {
 				setNovoCustoHora(Double.parseDouble(txtNovoCustohora.getText()));
 			}
 		});
-		buttonApplyNovoCustoHora.setBounds(800, 474, 89, 24);
+		buttonApplyNovoCustoHora.setBounds(778, 509, 89, 24);
 		contentPane.add(buttonApplyNovoCustoHora);
 
 		JScrollPane scrollPaneTabelaHoras = new JScrollPane();
-		scrollPaneTabelaHoras.setBounds(444, 103, 445, 155);
+		scrollPaneTabelaHoras.setBounds(422, 103, 445, 174);
 		contentPane.add(scrollPaneTabelaHoras);
 		tabelaHoras = CriarTabela(sHours);
 		scrollPaneTabelaHoras.setViewportView(tabelaHoras);
@@ -210,7 +204,7 @@ public class Informacao extends JFrame {
 			}
 		});
 		btnObterGraficoHoras.setFont(new Font("Tahoma", Font.BOLD, 11));
-		btnObterGraficoHoras.setBounds(615, 509, 274, 43);
+		btnObterGraficoHoras.setBounds(593, 544, 274, 43);
 		contentPane.add(btnObterGraficoHoras);
 
 		JButton btnObterGraficoCustos = new JButton("Obter Gráficos dos Custos do Trabalho");
@@ -221,42 +215,34 @@ public class Informacao extends JFrame {
 			}
 		});
 		btnObterGraficoCustos.setFont(new Font("Tahoma", Font.BOLD, 11));
-		btnObterGraficoCustos.setBounds(615, 563, 274, 43);
+		btnObterGraficoCustos.setBounds(593, 598, 274, 43);
 		contentPane.add(btnObterGraficoCustos);
 
 		JLabel lblTabelaDeHoras = new JLabel("Tabela de horas previstas/usadas");
 		lblTabelaDeHoras.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblTabelaDeHoras.setBounds(412, 65, 324, 43);
+		lblTabelaDeHoras.setBounds(393, 62, 324, 43);
 		contentPane.add(lblTabelaDeHoras);
 
 		JLabel lblTabelaDeCustos = new JLabel("Tabela de custos");
 		lblTabelaDeCustos.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblTabelaDeCustos.setBounds(412, 270, 305, 43);
+		lblTabelaDeCustos.setBounds(393, 280, 305, 43);
 		contentPane.add(lblTabelaDeCustos);
-
-		JTextArea textDate = new JTextArea(getDate());
-		textDate.setBounds(20, 338, 211, 49);
-		contentPane.add(textDate);
-
-
-		JLabel lblProjectName = new JLabel(getNameofProject());
+		
+		String projectName = getNameofProject();
+		JLabel lblProjectName = new JLabel(projectName);
 		lblProjectName.setHorizontalAlignment(SwingConstants.CENTER);
 		lblProjectName.setFont(new Font("Felix Titling", Font.BOLD, 25));
-		lblProjectName.setBounds(221, 11, 575, 53);
+		lblProjectName.setBounds(0, 11, 879, 53);
 		contentPane.add(lblProjectName);
-
+		
 		JLabel lblREADME = new JLabel("Conteúdo do ficheiro README:");
 		lblREADME.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblREADME.setBounds(10, 577, 300, 30);
+		lblREADME.setBounds(10, 421, 300, 30);
 		contentPane.add(lblREADME);
-
-	
-
-
 
 		JScrollPane scrollPaneREADME = new JScrollPane();
 		scrollPaneREADME.setViewportBorder(null);
-		scrollPaneREADME.setBounds(20, 607, 324, 179);
+		scrollPaneREADME.setBounds(20, 462, 324, 179);
 		contentPane.add(scrollPaneREADME);
 
 
@@ -273,7 +259,66 @@ public class Informacao extends JFrame {
 			e1.printStackTrace();
 		}
 
-
+		
+		JLabel lblLinksTexts = new JLabel("Links para os textos das reuniões:");
+		lblLinksTexts.setLabelFor(scrollPaneLinksTexts);
+		lblLinksTexts.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblLinksTexts.setBounds(20, 226, 334, 28);
+		contentPane2.add(lblLinksTexts);
+		
+		JScrollPane scrollPaneOriginaArtefactos = new JScrollPane();
+		scrollPaneOriginaArtefactos.setViewportBorder(null);
+		scrollPaneOriginaArtefactos.setBounds(480, 50, 389, 165);
+		contentPane2.add(scrollPaneOriginaArtefactos);
+		
+		JTextArea jTextOriginaArtefactos = new JTextArea(getActivitiesHoursCost());
+		jTextOriginaArtefactos.setEditable(false);
+		scrollPaneOriginaArtefactos.setViewportView(jTextOriginaArtefactos);
+		
+		JScrollPane scrollPaneNaoOriginaArtefactos = new JScrollPane();
+		scrollPaneNaoOriginaArtefactos.setViewportBorder(null);
+		scrollPaneNaoOriginaArtefactos.setBounds(480, 265, 389, 165);
+		contentPane2.add(scrollPaneNaoOriginaArtefactos);
+		
+		JTextArea jTextNaoOriginaArtefactos = new JTextArea(notgetActivitiesHoursCost());
+		jTextNaoOriginaArtefactos.setEditable(false);
+		scrollPaneNaoOriginaArtefactos.setViewportView(jTextNaoOriginaArtefactos);
+		
+		JLabel lblNaoOriginaArtefactos = new JLabel("Atividades que não geraram artefactos:");
+		lblNaoOriginaArtefactos.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblNaoOriginaArtefactos.setBounds(465, 226, 389, 28);
+		contentPane2.add(lblNaoOriginaArtefactos);
+		
+		JLabel lblOriginaArtefactos = new JLabel("Atividades que geraram artefactos:");
+		lblOriginaArtefactos.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblOriginaArtefactos.setBounds(465, 11, 334, 28);
+		contentPane2.add(lblOriginaArtefactos);
+		
+		JLabel lblCommitsList = new JLabel("Lista de Commits:");
+		lblCommitsList.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblCommitsList.setBounds(20, 441, 334, 28);
+		contentPane2.add(lblCommitsList);
+		
+		JScrollPane scrollPaneCommitsList = new JScrollPane();
+		scrollPaneCommitsList.setBounds(30, 480, 389, 165);
+		contentPane2.add(scrollPaneCommitsList);
+		
+		JTextArea jTextCommitsList = new JTextArea((String) null);
+		scrollPaneCommitsList.setViewportView(jTextCommitsList);
+		
+		JScrollPane scrollPaneTagList = new JScrollPane();
+		scrollPaneTagList.setBounds(480, 480, 389, 165);
+		contentPane2.add(scrollPaneTagList);
+		
+		JTextArea jTextTagList = new JTextArea((String) null);
+		scrollPaneTagList.setViewportView(jTextTagList);
+		
+		JLabel lblTagList = new JLabel("Lista de Tags:");
+		lblTagList.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblTagList.setBounds(465, 441, 334, 28);
+		contentPane2.add(lblTagList);
+		
+		
 	}
 
 	private String getNameofProject() {
@@ -281,13 +326,6 @@ public class Informacao extends JFrame {
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		Organization organization = trelloApi.getBoardOrganization(boards.get(0).getId());
 		String name = organization.getDisplayName();
-		/*
-		 * List<Card> cards = trelloApi.getBoardCards(boards.get(0).getId()); Card
-		 * projectcard = trelloApi.getBoardCard(boards.get(0).getId(),
-		 * cards.get(0).getId());
-		 * 
-		 * String name = projectcard.getName();
-		 */
 		return name;
 	}
 
@@ -320,11 +358,11 @@ public class Informacao extends JFrame {
 
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		List<Member> members = trelloApi.getBoardMembers(boards.get(0).getId());
-		String membersList = "";
+		StringBuffer membersList = new StringBuffer();
 		for (Member m : members) {
-			membersList = membersList + m.getFullName() + "\n";
+			membersList.append(m.getFullName() + "\n");
 		}
-		return membersList;
+		return membersList.toString();
 	}
 
 	/**
@@ -344,11 +382,11 @@ public class Informacao extends JFrame {
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		List<TList> lists = trelloApi.getBoardLists(boards.get(0).getId());
 		List<Card> listCards = trelloApi.getListCards(lists.get(1).getId());
-		String sprintsduration = "";
+		StringBuffer sprintsduration = new StringBuffer();
 		for (Card c : listCards) {
-			sprintsduration += c.getName() + ": " + c.getDue() + "\n";
+			sprintsduration.append(c.getName() + ": " + c.getDue() + "\n");
 		}
-		return sprintsduration;
+		return sprintsduration.toString();
 	}
 
 	/**
@@ -357,10 +395,10 @@ public class Informacao extends JFrame {
 	 * @return String
 	 */
 	private String getProductBacklog() {
-		String productBacklogList = "";
+		StringBuffer productBacklogList = new StringBuffer();
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		for (Board b : boards) {
-			productBacklogList += b.getName() + ":" + "\n";
+			productBacklogList.append(b.getName() + ":" + "\n");
 			List<TList> lists = trelloApi.getBoardLists(b.getId());
 			for (TList l : lists) {
 				if (!l.getName().contains("Planning") && !l.getName().contains("Review")
@@ -369,12 +407,12 @@ public class Informacao extends JFrame {
 						&& !l.getName().contains("Product Backlog")) {
 					List<Card> listCards = trelloApi.getListCards(l.getId());
 					for (Card c : listCards) {
-						productBacklogList += "-" + c.getName() + "\n";
+						productBacklogList.append("-" + c.getName() + "\n");
 					}
 				}
 			}
 		}
-		return productBacklogList;
+		return productBacklogList.toString();
 	}
 
 	/**
@@ -553,12 +591,12 @@ public class Informacao extends JFrame {
 				}
 			}
 		}
-		String info = "";
+		StringBuffer info = new StringBuffer();
 		int spentTime = 0;
 		for (MemberHoursInformation m : listamemberhours) {
 			for (String[] s : listauserartifactos) {
 				if (m.getUser().equals(s[0])) {
-					info += ("\tO utilizador " + m.getUser() + " originou " + s[1]
+					info.append("->O utilizador " + m.getUser() + " originou " + s[1]
 							+ " artifactos no repositório \ne gastou " + m.getSpentTime() + " horas "
 							+ " o que dá um custo total de: " + m.getSpentTime() * custoHora + " euros\n");
 					spentTime += m.getSpentTime();
@@ -568,9 +606,8 @@ public class Informacao extends JFrame {
 			}
 
 		}
-		String retorno = "\tNeste projeto foram originados " + lista.size() + " artifactos, \ngastando-se " + spentTime
-				+ " horas, o que dá um custo total de: " + spentTime * custoHora + " euros\n" + info;
-		System.out.println(retorno);
+		String retorno = "->Neste projeto foram originados " + lista.size() + " artifactos, \ngastando-se " + spentTime
+				+ " horas, o que dá um custo total de: " + spentTime * custoHora + " euros\n" + info.toString();
 		return retorno;
 	}
 	
@@ -657,12 +694,12 @@ public class Informacao extends JFrame {
 				}
 			}
 		}
-		String info = "";
+		StringBuffer info = new StringBuffer();
 		int spentTime = 0;
 		for (MemberHoursInformation m : listamemberhours) {
 			for (String[] s : listauserartifactos) {
 				if (m.getUser().equals(s[0])) {
-					info += ("\tO utilizador " + m.getUser() + " originou " + s[1]
+					info.append("->O utilizador " + m.getUser() + " originou " + s[1]
 							+ " atividades que não deram origem a artifactos no repositório \ne gastou " + m.getSpentTime() + " horas "
 							+ " o que dá um custo total de: " + m.getSpentTime() * custoHora + " euros\n");
 					spentTime += m.getSpentTime();
@@ -672,9 +709,8 @@ public class Informacao extends JFrame {
 			}
 
 		}
-		String retorno = "\tNeste projeto foram originadas " + lista.size() +  " atividades que não deram origem a artifactos, \ngastando-se " + spentTime
-				+ " horas, o que dá um custo total de: " + spentTime * custoHora + " euros\n" + info;
-		System.out.println(retorno);
+		String retorno = "->Neste projeto foram originadas " + lista.size() +  " atividades que não deram origem a artifactos, \ngastando-se " + spentTime
+				+ " horas, o que dá um custo total de: " + spentTime * custoHora + " euros\n" + info.toString();
 		return retorno;
 	}
 
@@ -798,7 +834,7 @@ public class Informacao extends JFrame {
 
 	private String getREADME() throws IOException, URISyntaxException {
 
-		String readMEContent ="";
+		StringBuffer readMEContent = new StringBuffer();
 
 		/*
 		 * Call GitHub REST API - https://developer.github.com/v3/repos/contents/
@@ -827,10 +863,10 @@ public class Informacao extends JFrame {
 				 * client library can be used here.
 				 */
 				String fileContent = IOUtils.toString(new URI(downloadUrl), Charset.defaultCharset());
-				readMEContent += fileContent;
+				readMEContent.append(fileContent);
 			}
 
 		}
-		return readMEContent;
+		return readMEContent.toString();
 	}
 }

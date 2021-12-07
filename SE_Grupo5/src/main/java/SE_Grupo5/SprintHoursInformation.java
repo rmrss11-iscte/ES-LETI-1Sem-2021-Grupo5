@@ -160,12 +160,12 @@ class SprintHoursInformation {
 	 */
 	public String getInfomation() {
 
-		String s = "";
+		StringBuffer s = new StringBuffer();
 		for (MemberHoursInformation h : memberHoursInformationList) {
-			s = s + "\n" + h.getInfomation();
+			s.append("\n" + h.getInfomation());
 		}
 
-		return "On board " + sprint + ":" + s;
+		return "On board " + sprint + ":" + s.toString();
 	}
 
 }
