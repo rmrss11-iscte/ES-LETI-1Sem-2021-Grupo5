@@ -366,7 +366,7 @@ public class Informacao extends JFrame {
 									sHours.get(control1).getMemberHoursInformationList().get(control)
 											.addTime(Double.parseDouble(doubles[0]), Double.parseDouble(doubles[1]));
 								}
-							}
+							} 
 						}
 					}
 				}
