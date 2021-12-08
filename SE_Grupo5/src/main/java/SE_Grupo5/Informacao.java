@@ -69,14 +69,13 @@ public class Informacao extends JFrame {
 
 	/**
 	 * Create the frame.
+	 * @throws IOException 
 	 * 
-	 * @throws IOException
-	 * 
-	 * @param trelloApi        Representa a conexão ao trello
-	 * @param trelloUtilizador Representa o user no trello do Utilizador
-	 * @param gitHubApi        Representa a conexão ao GitHub
-	 * @param repositoryOwner  Representa o nome do dono do repositório GitHub
-	 * @param repositoryName   Representa o nome do repositório GitHub
+	 * @param trelloApi        	Representa a conexão ao trello
+	 * @param trelloUtilizador 	Representa o user no trello do Utilizador
+	 * @param gitHubApi			Representa a conexão ao GitHub 
+	 * @param repositoryOwner	Representa o nome do dono do repositório GitHub
+	 * @param repositoryName	Representa o nome do repositório GitHub	 
 	 */
 
 	public Informacao(Trello trelloApi, String trelloUtilizador, GitHub gitHubApi, String repositoryOwner,
