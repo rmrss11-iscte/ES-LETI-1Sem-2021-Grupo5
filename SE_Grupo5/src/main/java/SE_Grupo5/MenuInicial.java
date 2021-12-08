@@ -112,7 +112,7 @@ public class MenuInicial {
 				try {
 					frame.setVisible(false);
 				
-					final GitHub gitHubApi = Conexao.conexaoGitHub("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");
+					final GitHub gitHubApi = Conexao.conexaoGitHub("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");
 					final Trello trelloApi = Conexao.conexaoTrello("95535b17caae83c1c1435cbe99dbcf24",
 							"195e391a7ce8c837658de6d6473ac882450d8115dbe75d641f8c1cf6a396fd97");
 					final String trelloUtilizador = "andre_barroso88";
