@@ -112,19 +112,11 @@ public class MenuInicial {
 				try {
 					frame.setVisible(false);
 				
-
-
-					final GitHub gitHubApi = Conexao.conexaoGitHub("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");
-					final Trello trelloApi = Conexao.conexaoTrello("95535b17caae83c1c1435cbe99dbcf24",
-							"195e391a7ce8c837658de6d6473ac882450d8115dbe75d641f8c1cf6a396fd97");
-					final String trelloUtilizador = "andre_barroso88";
-					final String repositoryName = "ES-LETI-1Sem-2021-Grupo5";
-					final String repositoryOwner = "rmrss11-iscte";
-					//final GitHub gitHubApi = Conexao.conexaoGitHub(getGitHubToken());
-					//final Trello trelloApi = Conexao.conexaoTrello(getTrelloKey(), getTrelloToken());
-					//final String trelloUtilizador = getTrelloUser();
-					//final String repositoryName = getRepositoryName();
-					//final String repositoryOwner = getRepositoryOwner();
+					final GitHub gitHubApi = Conexao.conexaoGitHub(getGitHubToken());
+					final Trello trelloApi = Conexao.conexaoTrello(getTrelloKey(), getTrelloToken());
+					final String trelloUtilizador = getTrelloUser();
+					final String repositoryName = getRepositoryName();
+					final String repositoryOwner = getRepositoryOwner();
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							try {

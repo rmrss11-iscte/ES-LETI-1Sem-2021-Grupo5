@@ -52,7 +52,7 @@ public class Informacao extends JFrame {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 5924931067800093425L;
+	public static final long serialVersionUID = 5924931067800093425L;
 
 	JTabbedPane abas = new JTabbedPane();
 
@@ -329,7 +329,7 @@ public class Informacao extends JFrame {
      * 
      * @return String
      */
-	private String getNameofProject() {
+	public String getNameofProject() {
 
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		Organization organization = trelloApi.getBoardOrganization(boards.get(0).getId());
@@ -344,7 +344,7 @@ public class Informacao extends JFrame {
 	 * 
 	 * @param novoCustoHora Representa o novo valor a se pagar por Hora
 	 */
-	private void setNovoCustoHora(double novoCustoHora) {
+	public void setNovoCustoHora(double novoCustoHora) {
 		if (novoCustoHora == custoHora)
 			return;
 		int row = 0;
@@ -362,7 +362,7 @@ public class Informacao extends JFrame {
 	 * 
 	 * @return String
 	 */
-	private String getMembers() {
+	public String getMembers() {
 
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		List<Member> members = trelloApi.getBoardMembers(boards.get(0).getId());
@@ -378,7 +378,7 @@ public class Informacao extends JFrame {
 	 * 
 	 * @return String
 	 */
-	private String getDate() {
+	public String getDate() {
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		List<Card> cards = trelloApi.getBoardCards(boards.get(0).getId());
 		Card projectCard = trelloApi.getBoardCard(boards.get(0).getId(), cards.get(0).getId());
@@ -386,7 +386,7 @@ public class Informacao extends JFrame {
 		return dataFim.toString();
 	}
 
-	private String getSprintsDuration() {
+	public String getSprintsDuration() {
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		List<TList> lists = trelloApi.getBoardLists(boards.get(0).getId());
 		List<Card> listCards = trelloApi.getListCards(lists.get(1).getId());
@@ -402,7 +402,7 @@ public class Informacao extends JFrame {
 	 * 
 	 * @return String
 	 */
-	private String getProductBacklog() {
+	public String getProductBacklog() {
 		StringBuffer productBacklogList = new StringBuffer();
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		for (Board b : boards) {
@@ -427,7 +427,7 @@ public class Informacao extends JFrame {
 	 * Vai ao trello e obtém as horas estimadas e utilizadas de cada membro por
 	 * sprint Armazenando-as numa lista de SprintHours
 	 */
-	private void getProjectTime() {
+	public void getProjectTime() {
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		for (Board b : boards) {
 			String boardName = b.getName();
@@ -496,7 +496,7 @@ public class Informacao extends JFrame {
      * @return String
      */
 
-	private String getAttachList() throws IOException {
+	public String getAttachList() throws IOException {
 	String AttachmentsList = "";
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 
@@ -643,7 +643,7 @@ public class Informacao extends JFrame {
      * @return String
      */
 
-	private String notgetActivitiesHoursCost() {
+	public String notgetActivitiesHoursCost() {
 		List<Card> lista = new ArrayList<Card>();
 		List<String[]> listauserartifactos = new ArrayList<String[]>();
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
@@ -791,7 +791,7 @@ public class Informacao extends JFrame {
 	 * 
 	 * @return JTable
 	 */
-	private JTable CriarTabela(List<SprintHoursInformation> sprintHoursList) {
+	public JTable CriarTabela(List<SprintHoursInformation> sprintHoursList) {
 		String[] colunas = { "Sprint", "User", "Horas previstas", "Horas usadas" };
 		int numberOfLines = 0;
 		for (SprintHoursInformation sH : sprintHoursList) {
@@ -835,7 +835,7 @@ public class Informacao extends JFrame {
 	 * 
 	 * @return JTable
 	 */
-	private JTable criarTabela(List<SprintHoursInformation> sprintHoursList, double custoHora) {
+	public JTable criarTabela(List<SprintHoursInformation> sprintHoursList, double custoHora) {
 		String[] colunas = { "Sprint", "User", "Pagamento" };
 
 		int numberOfLines = 0;
@@ -874,7 +874,7 @@ public class Informacao extends JFrame {
 	 * @return String
 	 */
 
-	private String getREADME() throws IOException, URISyntaxException {
+	public String getREADME() throws IOException, URISyntaxException {
 
 		StringBuffer readMEContent = new StringBuffer();
 
@@ -923,7 +923,7 @@ public class Informacao extends JFrame {
 	 * @param naoGeraram       
 	 * 
 	 */
-	private void witeToCSV(String membros, JTable horas, JTable custo, String geraram, String naoGeraram,
+	public void witeToCSV(String membros, JTable horas, JTable custo, String geraram, String naoGeraram,
 			String commits) {
 
 		StringBuffer buffer = new StringBuffer();
@@ -999,13 +999,6 @@ public class Informacao extends JFrame {
 	}
 
 
-     * Dá return de uma String que representa os links aos quais estão associados os textos 
-     * resultantes das reuniões
-     * 
-     * @return String
-     */
-	
-
 
 
 	/**
@@ -1030,7 +1023,7 @@ public class Informacao extends JFrame {
 	}
 
 
-	private String commitsbydate() {
+	public String commitsbydate() {
 		StringBuffer last = new StringBuffer();
 
 		try {

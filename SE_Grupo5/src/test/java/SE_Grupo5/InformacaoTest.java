@@ -101,7 +101,7 @@ public class InformacaoTest {
 				+ "-Realização de testes unitários\n" + "-Fazer uma cobertura de testes, através do plugin EclEmma\n"
 				+ "-Obter um relatório de code smells\n" + "-Escolher um plugin direcionado para code smells\n"
 				+ "-Obter o conteúdo do ficheiro README presente no GitHub\n"
-				+"-Obter as descrições e datas dos commits de cada membro da equipa, por branch e por ordem cronológica\n"
+				+ "-Obter as descrições e datas dos commits de cada membro da equipa, por branch e por ordem cronológica\n"
 				+ "-Obter as tags presentes no branch master, bem como as respetivas datas em que foram criadas;\n";
 		assertEquals(output, info.getProductBacklog());
 
@@ -131,15 +131,15 @@ public class InformacaoTest {
 	@Test
 	public void testGetActivitiesHoursCost() {
 		String output = "->Neste projeto foram originados 15 artifactos,\n"
-				+"gastando-se 37 horas, o que dá um custo total de: 740.0 euros\n"
-				+"->O utilizador andre_barroso88 originou 6 artifactos no repositório \n"
-				+"e gastou 17.879999999999995 horas  o que dá um custo total de: 357.5999999999999 euros\n"
-				+"->O utilizador luisfigueira12 originou 5 artifactos no repositório \n"
-				+"e gastou 5.989999999999998 horas  o que dá um custo total de: 119.79999999999997 euros\n"
-				+"->O utilizador ricardorodrigues203 originou 4 artifactos no repositório \n"
-				+"e gastou 12.180000000000001 horas  o que dá um custo total de: 243.60000000000002 euros\n"
-				+"->O utilizador andrecristinapereira2 originou 1 artifactos no repositório \n"
-				+"e gastou 3.0 horas  o que dá um custo total de: 60.0 euros\n";
+				+ "gastando-se 37 horas, o que dá um custo total de: 740.0 euros\n"
+				+ "->O utilizador andre_barroso88 originou 6 artifactos no repositório \n"
+				+ "e gastou 17.879999999999995 horas  o que dá um custo total de: 357.5999999999999 euros\n"
+				+ "->O utilizador luisfigueira12 originou 5 artifactos no repositório \n"
+				+ "e gastou 5.989999999999998 horas  o que dá um custo total de: 119.79999999999997 euros\n"
+				+ "->O utilizador ricardorodrigues203 originou 4 artifactos no repositório \n"
+				+ "e gastou 12.180000000000001 horas  o que dá um custo total de: 243.60000000000002 euros\n"
+				+ "->O utilizador andrecristinapereira2 originou 1 artifactos no repositório \n"
+				+ "e gastou 3.0 horas  o que dá um custo total de: 60.0 euros\n";
 		assertEquals(output, info.getActivitiesHoursCost());
 	}
 
@@ -186,21 +186,16 @@ public class InformacaoTest {
 
 	@Test
 	public void testGetREADME() throws IOException, URISyntaxException {
-		String output = "# ES-LETI-1Sem-2021-Grupo5\r\n"
-				+ "Este Projeto foi desenvolvido no âmbito da cadeira\r\n"
+		String output = "# ES-LETI-1Sem-2021-Grupo5\r\n" + "Este Projeto foi desenvolvido no âmbito da cadeira\r\n"
 				+ "Engenharia de Software do Curso ETI no primeiro semestre do ano letivo 2021/22\r\n"
-				+ "pelo grupo 5 composto por:\r\n"
-				+ "André Barroso - 92552;\r\n"
-				+ "André Pereira - 93252;\r\n"
-				+ "Luís Figueira - 82146;\r\n"
-				+ "Ricardo Rodrigues - 82993;\n";
-		assertEquals(output,info.getREADME());
+				+ "pelo grupo 5 composto por:\r\n" + "André Barroso - 92552;\r\n" + "André Pereira - 93252;\r\n"
+				+ "Luís Figueira - 82146;\r\n" + "Ricardo Rodrigues - 82993;\n";
+		assertEquals(output, info.getREADME());
 	}
 
 	@Test
 	public void testGetTagList() {
-		String output = "ES1v1.0.0.1 - Mon Oct 11 23:49:53 BST 2021\r\n"
-				+ "ES1v1.0 - Mon Oct 11 21:57:50 BST 2021\n";
+		String output = "ES1v1.0.0.1 - Mon Oct 11 23:49:53 BST 2021\r\n" + "ES1v1.0 - Mon Oct 11 21:57:50 BST 2021\n";
 		assertEquals(output, info.getTagList());
 	}
 
