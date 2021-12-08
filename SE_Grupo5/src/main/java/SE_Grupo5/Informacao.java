@@ -324,6 +324,11 @@ public class Informacao extends JFrame {
 		
 	}
 
+	/**
+     * Dá return de uma String que representa o nome do projeto no Trello
+     * 
+     * @return String
+     */
 	private String getNameofProject() {
 
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
@@ -489,7 +494,14 @@ public class Informacao extends JFrame {
 			}
 		}
 	}
-	String AttachmentsList = "";
+	
+	/**
+     * Dá return de uma String que representa os links aos quais estão associados os textos 
+     * resultantes das reuniões
+     * 
+     * @return String
+     */
+	public String AttachmentsList = "";
 	private String getAttachList() throws IOException {
 
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
@@ -614,7 +626,12 @@ public class Informacao extends JFrame {
 		return retorno;
 	}
 	
-	
+	/**
+     * Dá return de uma String que representa as atividadedes que não deram origem
+     * a artifactos
+     * 
+     * @return String
+     */
 	private String notgetActivitiesHoursCost() {
 		List<Card> lista = new ArrayList<Card>();
 		List<String[]> listauserartifactos = new ArrayList<String[]>();
@@ -873,8 +890,14 @@ public class Informacao extends JFrame {
 		return readMEContent.toString();
 	}
 	
+	/**
+     * Dá return de uma String que representa os links aos quais estão associados os textos 
+     * resultantes das reuniões
+     * 
+     * @return String
+     */
+	
 	private String commitsbydate() {
-		//		BString last="";
 		StringBuffer last = new StringBuffer();
 
 		try {
@@ -900,7 +923,6 @@ public class Informacao extends JFrame {
 			
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}  System.out.print(last);
 		return last.toString();

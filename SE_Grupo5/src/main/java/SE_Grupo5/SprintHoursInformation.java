@@ -134,7 +134,7 @@ class SprintHoursInformation {
 	 * 
 	 * @return time
 	 */
-	private double getSpentTime() {
+	public double getSpentTime() {
 		double time=0;
 		for (MemberHoursInformation h : memberHoursInformationList) {
 			time +=h.getSpentTime();
