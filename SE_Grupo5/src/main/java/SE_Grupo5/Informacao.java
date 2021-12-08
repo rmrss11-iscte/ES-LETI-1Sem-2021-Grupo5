@@ -7,6 +7,9 @@ import javax.swing.border.EmptyBorder;
 import org.apache.commons.io.IOUtils;
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHRepository;
+
+import org.kohsuke.github.GHTag;
+
 import org.kohsuke.github.GHUser;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.PagedIterable;
@@ -53,20 +56,19 @@ public class Informacao extends JFrame {
 
 	JTabbedPane abas = new JTabbedPane();
 
-	private Trello trelloApi;
-	private String trelloUtilizador;
-	private String repositoryName;
-	private String repositoryOwner;
-	private GitHub gitHubApi;
+	public Trello trelloApi;
+	public String trelloUtilizador;
+	public String repositoryName;
+	public String repositoryOwner;
+	public GitHub gitHubApi;
 
-	private JPanel contentPane = new JPanel();
-	private JPanel contentPane2 = new JPanel();
-	private List<SprintHoursInformation> sHours = new ArrayList<SprintHoursInformation>();
-	private JTextField txtNovoCustohora = new JTextField();;
-	private JTable tabelaHoras;
-	private JTable tabelaCusto;
-	private double custoHora = 20;
-
+	public JPanel contentPane = new JPanel();
+	public JPanel contentPane2 = new JPanel();
+	public List<SprintHoursInformation> sHours = new ArrayList<SprintHoursInformation>();
+	public JTextField txtNovoCustohora = new JTextField();;
+	public JTable tabelaHoras;
+	public JTable tabelaCusto;
+	public double custoHora = 20;
 	/**
 	 * Create the frame.
 	 * @throws IOException 
@@ -300,7 +302,7 @@ public class Informacao extends JFrame {
 		scrollPaneTagList.setBounds(480, 480, 389, 165);
 		contentPane2.add(scrollPaneTagList);
 
-		JTextArea jTextTagList = new JTextArea((String) null);
+		JTextArea jTextTagList = new JTextArea(getTagList());
 		scrollPaneTagList.setViewportView(jTextTagList);
 
 		JLabel lblTagList = new JLabel("Lista de Tags:");
@@ -380,8 +382,8 @@ public class Informacao extends JFrame {
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		List<Card> cards = trelloApi.getBoardCards(boards.get(0).getId());
 		Card projectCard = trelloApi.getBoardCard(boards.get(0).getId(), cards.get(0).getId());
-		Date dataInicio = projectCard.getDue();
-		return dataInicio.toString();
+		Date dataFim = projectCard.getDue();
+		return dataFim.toString();
 	}
 
 	private String getSprintsDuration() {
@@ -512,8 +514,15 @@ public class Informacao extends JFrame {
 
 		return AttachmentsList;
 	}
-
-	private String getActivitiesHoursCost() {
+	
+	/**
+     * Dá return de uma String que representa as atividadees que  deram origem
+     * a artifactos
+     * 
+     * Contabiliza as horas gastas no desenvolvimento dessas atividades e calcular o custo das mesmas
+     * 
+     */
+	public String getActivitiesHoursCost() {
 		List<Card> lista = new ArrayList<Card>();
 		List<String[]> listauserartifactos = new ArrayList<String[]>();
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
@@ -996,6 +1005,30 @@ public class Informacao extends JFrame {
      * @return String
      */
 	
+
+
+
+	/**
+	 * Este método dá return de uma String com o nome das tags no branchMaster,
+	 * bem como a data em que foram criadas
+	 * 
+	 */
+	public String getTagList() {
+		StringBuffer tagList = new StringBuffer();
+		try {
+			String path = repositoryOwner + "/" + repositoryName;
+			GHRepository repositorio = gitHubApi.getRepository(path);
+			PagedIterable<GHTag> tags = repositorio.listTags();
+			for (GHTag tag : tags) {
+				tagList.append(tag.getName() + " - " + tag.getCommit().getCommitDate() + "\n");
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return tagList.toString();
+	}
+
 
 	private String commitsbydate() {
 		StringBuffer last = new StringBuffer();
