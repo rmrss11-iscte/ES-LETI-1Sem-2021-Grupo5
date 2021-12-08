@@ -73,7 +73,7 @@ public class Informacao extends JFrame {
 	 * @param trelloUtilizador 	Representa o user no trello do Utilizador
 	 * @param gitHubApi			Representa a conexão ao GitHub 
 	 * @param repositoryOwner	Representa o nome do dono do repositório GitHub
-	 * @param repositoryName	Representa o nome do repositório GitHub	
+	 * @param repositoryName	Representa o nome do repositório GitHub	 
 	 */
 
 

@@ -37,7 +37,7 @@ public class MenuInicial {
 	/**
 	 * Create the application.
 	 */
-	public MenuInicial() {
+	public MenuInicial() { 
 		initialize();
 	}
 
