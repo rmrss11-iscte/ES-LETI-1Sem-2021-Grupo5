@@ -6,7 +6,6 @@ import javax.swing.border.EmptyBorder;
 
 import org.apache.commons.io.IOUtils;
 import org.kohsuke.github.GHCommit;
-import org.kohsuke.github.GHContent;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHUser;
 import org.kohsuke.github.GitHub;
@@ -30,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
@@ -309,7 +307,8 @@ public class Informacao extends JFrame {
 		lblTagList.setBounds(465, 441, 334, 28);
 		contentPane2.add(lblTagList);
 
-		witeToCSV(jTextMembers.getText(), tabelaHoras, tabelaCusto, jTextOriginaArtefactos.getText(), jTextNaoOriginaArtefactos.getText(), "commits");
+		witeToCSV(jTextMembers.getText(), tabelaHoras, tabelaCusto, jTextOriginaArtefactos.getText(),
+				jTextNaoOriginaArtefactos.getText(), "commits");
 
 	}
 
@@ -446,7 +445,8 @@ public class Informacao extends JFrame {
 								}
 								if (!username.equals("global")) {
 									String fullName = trelloApi.getMemberInformation(username).getFullName();
-									if(fullName==null) fullName="Luis Figueira";
+									if (fullName == null)
+										fullName = "Luis Figueira";
 									String[] doubles = dataText[doublesPosition].split("/");
 
 									int control = 0;
@@ -542,7 +542,8 @@ public class Informacao extends JFrame {
 							String username = user[1];
 							if (!username.equals("global")) {
 								String fullName = trelloApi.getMemberInformation(username).getFullName();
-								if(fullName==null) fullName="Luis Figueira";
+								if (fullName == null)
+									fullName = "Luis Figueira";
 								String[] doubles = dataText[2].split("/");
 								int control = 0;
 								while (control < listamemberhours.size()) {
@@ -563,7 +564,8 @@ public class Informacao extends JFrame {
 							String username = trelloApi.getActionMemberCreator(a.getId()).getUsername();
 							if (!username.equals("global")) {
 								String fullName = trelloApi.getMemberInformation(username).getFullName();
-								if(fullName==null) fullName="Luis Figueira";
+								if (fullName == null)
+									fullName = "Luis Figueira";
 								String[] doubles = dataText[1].split("/");
 								int control = 0;
 								while (control < listamemberhours.size()) {
@@ -651,7 +653,8 @@ public class Informacao extends JFrame {
 							String username = user[1];
 							if (!username.equals("global")) {
 								String fullName = trelloApi.getMemberInformation(username).getFullName();
-								if(fullName==null) fullName="Luis Figueira";
+								if (fullName == null)
+									fullName = "Luis Figueira";
 								String[] doubles = dataText[2].split("/");
 								int control = 0;
 								while (control < listamemberhours.size()) {
@@ -672,7 +675,8 @@ public class Informacao extends JFrame {
 							String username = trelloApi.getActionMemberCreator(a.getId()).getUsername();
 							if (!username.equals("global")) {
 								String fullName = trelloApi.getMemberInformation(username).getFullName();
-								if(fullName==null) fullName="Luis Figueira";
+								if (fullName == null)
+									fullName = "Luis Figueira";
 								String[] doubles = dataText[1].split("/");
 								int control = 0;
 								while (control < listamemberhours.size()) {
@@ -882,46 +886,46 @@ public class Informacao extends JFrame {
 			double s = 0;
 			for (int row = 0; row < horas.getRowCount(); row++) {
 				String memberRow = ((String) horas.getValueAt(row, 1));
-				if(memberRow.equals(m)) {
+				if (memberRow.equals(m)) {
 					e += ((double) horas.getValueAt(row, 2));
 					s += ((double) horas.getValueAt(row, 3));
 				}
 			}
-			buffer.append(e+";"+s+";");
-			
+			buffer.append(e + ";" + s + ";");
+
 			double c = 0;
 			for (int row = 0; row < custo.getRowCount(); row++) {
 				String memberRow = ((String) horas.getValueAt(row, 1));
-				if(memberRow.equals(m)) {
+				if (memberRow.equals(m)) {
 					c += ((double) custo.getValueAt(row, 2));
 				}
 			}
 			buffer.append(c + ";");
-			
+
 			String nrAtv = "";
 			String[] gerou = geraram.split("->O utilizador ");
-			for(int i=1;i<gerou.length;i++) {
+			for (int i = 1; i < gerou.length; i++) {
 				String[] user = gerou[i].split(" originou ");
-				if(user[0].equals(m)) {
+				if (user[0].equals(m)) {
 					String[] temp = user[1].split(" artifactos");
 					nrAtv = temp[0];
 				}
 			}
 			buffer.append(nrAtv + ";");
-			
+
 			String nrAtv2 = "";
 			String[] nGerou = naoGeraram.split("->O utilizador ");
-			for(int i=1;i<nGerou.length;i++) {
+			for (int i = 1; i < nGerou.length; i++) {
 				String[] user = nGerou[i].split(" originou ");
-				if(user[0].equals(m)) {
+				if (user[0].equals(m)) {
 					String[] temp = user[1].split(" atividades ");
 					nrAtv2 = temp[0];
 				}
 			}
 			buffer.append(nrAtv2 + ";\n");
-			
+
 		}
-		
+
 		try {
 			FileWriter writer = new FileWriter("Information.csv");
 			writer.write(buffer.toString());
@@ -931,80 +935,36 @@ public class Informacao extends JFrame {
 		}
 	}
 
-
-
-
-
-private String commitsbydate() {
-		//		BString last="";
+	private String commitsbydate() {
+		// BString last="";
 		StringBuffer last = new StringBuffer();
 
 		try {
-			String path = repositoryOwner+"/"+repositoryName;
-	
+			String path = repositoryOwner + "/" + repositoryName;
+
 			GHRepository repositorio = gitHubApi.getRepository(path);
-			PagedIterable<GHCommit> commit =  repositorio.listCommits();
-			
+			PagedIterable<GHCommit> commit = repositorio.listCommits();
 
-		
-				for(GHCommit cc: commit) {
-				
-					GHUser committer = cc.getCommitter();
+			for (GHCommit cc : commit) {
 
-					if( committer != null) {
+				GHUser committer = cc.getCommitter();
 
-						String name = committer.getName();
-						String commitDate = cc.getCommitDate().toString();
-						String commitname = cc.getCommitShortInfo().getMessage();
-						last.append("commiter: " + name + " commited at: " + commitDate  + " commit name: " + commitname + "\n" );
-					}
+				if (committer != null) {
+
+					String name = committer.getName();
+					String commitDate = cc.getCommitDate().toString();
+					String commitname = cc.getCommitShortInfo().getMessage();
+					last.append(
+							"commiter: " + name + " commited at: " + commitDate + " commit name: " + commitname + "\n");
 				}
-			
+			}
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}  System.out.print(last);
-		return last.toString();
-
-}}er.close();
-		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	private String commitsbydate() {
-		//		BString last="";
-		StringBuffer last = new StringBuffer();
-
-		try {
-			String path = repositoryOwner+"/"+repositoryName;
-	
-			GHRepository repositorio = gitHubApi.getRepository(path);
-			PagedIterable<GHCommit> commit =  repositorio.listCommits();
-			
-
-		
-				for(GHCommit cc: commit) {
-				
-					GHUser committer = cc.getCommitter();
-
-					if( committer != null) {
-
-						String name = committer.getName();
-						String commitDate = cc.getCommitDate().toString();
-						String commitname = cc.getCommitShortInfo().getMessage();
-						last.append("commiter: " + name + " commited at: " + commitDate  + " commit name: " + commitname + "\n" );
-					}
-				}
-			
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}  System.out.print(last);
+		System.out.print(last);
 		return last.toString();
-
 
 	}
 }
