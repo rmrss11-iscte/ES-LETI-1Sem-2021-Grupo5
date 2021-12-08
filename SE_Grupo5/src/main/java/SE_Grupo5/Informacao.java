@@ -4,6 +4,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import org.apache.commons.io.IOUtils;
+import org.kohsuke.github.GHContent;
+import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 
 import com.julienvey.trello.Trello;
@@ -11,13 +14,21 @@ import com.julienvey.trello.domain.*;
 
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.io.IOException;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Date;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Map;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -25,86 +36,147 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import java.awt.event.MouseAdapter;
 
+import org.springframework.web.client.RestTemplate;
+
 public class Informacao extends JFrame {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5924931067800093425L;
-	private JPanel contentPane = new JPanel();
+
+	JTabbedPane abas = new JTabbedPane();
+	
 	private Trello trelloApi;
 	private String trelloUtilizador;
+	private String repositoryName;
+	private String repositoryOwner;
 	private GitHub gitHubApi;
-	private List<SprintHours> sHours = new ArrayList<SprintHours>();
+
+	private JPanel contentPane = new JPanel();
+	private JPanel contentPane2 = new JPanel();
+	private List<SprintHoursInformation> sHours = new ArrayList<SprintHoursInformation>();
 	private JTextField txtNovoCustohora = new JTextField();;
 	private JTable tabelaHoras;
 	private JTable tabelaCusto;
 	private double custoHora = 20;
 
+
 	/**
 	 * Create the frame.
+	 * @throws IOException 
+	 * 
+	 * @param trelloApi        	Representa a conexão ao trello
+	 * @param trelloUtilizador 	Representa o user no trello do Utilizador
+	 * @param gitHubApi			Representa a conexão ao GitHub 
+	 * @param repositoryOwner	Representa o nome do dono do repositório GitHub
+	 * @param repositoryName	Representa o nome do repositório GitHub	
 	 */
-	public Informacao(Trello trelloApi, String trelloUtilizador, GitHub gitHubApi) {
 
+
+	public Informacao(Trello trelloApi, String trelloUtilizador, GitHub gitHubApi,String repositoryOwner, String repositoryName) throws IOException {
+		
 		this.trelloApi = trelloApi;
 		this.trelloUtilizador = trelloUtilizador;
 		this.gitHubApi = gitHubApi;
+		this.repositoryName = repositoryName;
+		this.repositoryOwner = repositoryOwner;
 
 		getProjectTime();
 
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
-		setBounds(100, 100, 952, 751);
+		setBounds(100, 100, 900, 750);
+		getContentPane().add(BorderLayout.CENTER,abas);
 		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
 		contentPane.setLayout(null);
-
-		JLabel membersLabel = new JLabel("Membros do projeto:");
-		membersLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
-		membersLabel.setBounds(10, 119, 211, 43);
-		contentPane.add(membersLabel);
-
-		JTextArea membersDisplay = new JTextArea(getMembers());
-		membersLabel.setLabelFor(membersDisplay);
-		membersDisplay.setEditable(false);
-		membersDisplay.setBounds(20, 162, 253, 152);
-		contentPane.add(membersDisplay);
-
-		JLabel dataLabel = new JLabel("Data de Inicio:");
-		dataLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
-		dataLabel.setBounds(10, 310, 170, 32);
-		contentPane.add(dataLabel);
-
-		JLabel productBacklogLabel = new JLabel("Items do ProductBacklog:");
-		productBacklogLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
-		productBacklogLabel.setBounds(10, 409, 263, 28);
-		contentPane.add(productBacklogLabel);
+		contentPane2.setBackground(Color.WHITE);
+		contentPane2.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane2.setLayout(null);
 		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setViewportBorder(null);
-		scrollPane.setBounds(20, 437, 274, 179);
-		contentPane.add(scrollPane);
-		
-				JTextArea productBacklogDisplay = new JTextArea(getProductBacklog());
-				scrollPane.setViewportView(productBacklogDisplay);
-				productBacklogLabel.setLabelFor(productBacklogDisplay);
+		abas.addTab("Informação Principal",contentPane);
+		abas.addTab("Inf. Adicional",contentPane2);
 
-		JScrollPane scrollPane_custo = new JScrollPane();
-		scrollPane_custo.setBounds(444, 362, 445, 155);
-		contentPane.add(scrollPane_custo);
+
+		JLabel lblMembers = new JLabel("Membros do projeto:");
+		lblMembers.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblMembers.setBounds(10, 62, 200, 43);
+		contentPane.add(lblMembers);
+
+
+		JTextArea jTextMembers = new JTextArea(getMembers());
+		lblMembers.setLabelFor(jTextMembers);
+		jTextMembers.setEditable(false);
+		jTextMembers.setBounds(20, 105, 232, 91);
+		contentPane.add(jTextMembers);
+
+
+		JLabel lblDataFinal = new JLabel("Data de Fim:");
+		lblDataFinal.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblDataFinal.setBounds(10, 207, 160, 30);
+		contentPane.add(lblDataFinal);
+
+		JTextArea jTextDataFinal = new JTextArea(getDate());
+		lblDataFinal.setLabelFor(jTextDataFinal);
+		jTextDataFinal.setEditable(false);
+		jTextDataFinal.setBounds(20, 238, 232, 20);
+		contentPane.add(jTextDataFinal);
+		
+		JLabel lblSprintsDuration = new JLabel("Duração de cada Sprint:");
+		lblSprintsDuration.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblSprintsDuration.setBounds(10, 274, 242, 34);
+		contentPane.add(lblSprintsDuration);
+
+		JTextArea jTextSprintsDuration = new JTextArea(getSprintsDuration());
+		lblSprintsDuration.setLabelFor(jTextSprintsDuration);
+		jTextSprintsDuration.setEditable(false);
+		jTextSprintsDuration.setBounds(20, 310, 290, 100);
+		contentPane.add(jTextSprintsDuration);
+
+	
+		JScrollPane scrollPaneLinksTexts = new JScrollPane();
+		scrollPaneLinksTexts.setBounds(30, 265, 389, 165);
+		contentPane2.add(scrollPaneLinksTexts);
+
+		JTextArea jTextLinksTexts = new JTextArea(getAttachList());
+		scrollPaneLinksTexts.setViewportView(jTextLinksTexts);
+
+		
+		JLabel lblProductBacklog = new JLabel("Items do ProductBacklog:");
+		lblProductBacklog.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblProductBacklog.setBounds(20, 11, 334, 28);
+		contentPane2.add(lblProductBacklog);
+	
+		JScrollPane scrollPaneProductBackLog = new JScrollPane();
+		scrollPaneProductBackLog.setViewportBorder(null);
+		scrollPaneProductBackLog.setBounds(30, 50, 389, 165);
+		contentPane2.add(scrollPaneProductBackLog);
+		
+		
+				JTextArea jTextProductBacklog = new JTextArea(getProductBacklog());
+				scrollPaneProductBackLog.setViewportView(jTextProductBacklog);
+				jTextProductBacklog.setEditable(false);
+				lblProductBacklog.setLabelFor(jTextProductBacklog);
+
+
+
+		JScrollPane scrollPaneTabelaCusto = new JScrollPane();
+		scrollPaneTabelaCusto.setBounds(422, 324, 445, 174);
+		contentPane.add(scrollPaneTabelaCusto);
+
+
 		tabelaCusto = criarTabela(sHours, 20);
-		scrollPane_custo.setViewportView(tabelaCusto);
+		scrollPaneTabelaCusto.setViewportView(tabelaCusto);
 
 		JLabel lblCustoHora = new JLabel("Custo-Hora =             €");
 		lblCustoHora.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		lblCustoHora.setBounds(587, 538, 203, 24);
+		lblCustoHora.setBounds(574, 509, 203, 24);
 		contentPane.add(lblCustoHora);
+		
 		txtNovoCustohora.setHorizontalAlignment(SwingConstants.CENTER);
 		txtNovoCustohora.setFont(new Font("Tahoma", Font.PLAIN, 18));
-
-		// txt Novo Custo-Hora
 		txtNovoCustohora.setText("20");
-		txtNovoCustohora.setBounds(699, 538, 67, 24);
+		txtNovoCustohora.setBounds(688, 509, 67, 24);
 		contentPane.add(txtNovoCustohora);
 		txtNovoCustohora.setColumns(10);
 
@@ -115,14 +187,14 @@ public class Informacao extends JFrame {
 				setNovoCustoHora(Double.parseDouble(txtNovoCustohora.getText()));
 			}
 		});
-		buttonApplyNovoCustoHora.setBounds(800, 538, 89, 24);
+		buttonApplyNovoCustoHora.setBounds(778, 509, 89, 24);
 		contentPane.add(buttonApplyNovoCustoHora);
 
-		JScrollPane scrollPane_Horas = new JScrollPane();
-		scrollPane_Horas.setBounds(444, 160, 445, 155);
-		contentPane.add(scrollPane_Horas);
+		JScrollPane scrollPaneTabelaHoras = new JScrollPane();
+		scrollPaneTabelaHoras.setBounds(422, 103, 445, 174);
+		contentPane.add(scrollPaneTabelaHoras);
 		tabelaHoras = CriarTabela(sHours);
-		scrollPane_Horas.setViewportView(tabelaHoras);
+		scrollPaneTabelaHoras.setViewportView(tabelaHoras);
 
 		JButton btnObterGraficoHoras = new JButton("Obter Gráficos das Horas de Trabalho");
 		btnObterGraficoHoras.addMouseListener(new MouseAdapter() {
@@ -132,7 +204,7 @@ public class Informacao extends JFrame {
 			}
 		});
 		btnObterGraficoHoras.setFont(new Font("Tahoma", Font.BOLD, 11));
-		btnObterGraficoHoras.setBounds(615, 573, 274, 43);
+		btnObterGraficoHoras.setBounds(593, 544, 274, 43);
 		contentPane.add(btnObterGraficoHoras);
 
 		JButton btnObterGraficoCustos = new JButton("Obter Gráficos dos Custos do Trabalho");
@@ -143,28 +215,130 @@ public class Informacao extends JFrame {
 			}
 		});
 		btnObterGraficoCustos.setFont(new Font("Tahoma", Font.BOLD, 11));
-		btnObterGraficoCustos.setBounds(615, 627, 274, 43);
+		btnObterGraficoCustos.setBounds(593, 598, 274, 43);
 		contentPane.add(btnObterGraficoCustos);
-		
+
 		JLabel lblTabelaDeHoras = new JLabel("Tabela de horas previstas/usadas");
 		lblTabelaDeHoras.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblTabelaDeHoras.setBounds(412, 119, 324, 43);
+		lblTabelaDeHoras.setBounds(393, 62, 324, 43);
 		contentPane.add(lblTabelaDeHoras);
-		
+
 		JLabel lblTabelaDeCustos = new JLabel("Tabela de custos");
 		lblTabelaDeCustos.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblTabelaDeCustos.setBounds(412, 326, 305, 43);
+		lblTabelaDeCustos.setBounds(393, 280, 305, 43);
 		contentPane.add(lblTabelaDeCustos);
 		
-		JTextArea textDate = new JTextArea(getDate());
-		textDate.setBounds(20, 338, 211, 49);
-		contentPane.add(textDate);
+		String projectName = getNameofProject();
+		JLabel lblProjectName = new JLabel(projectName);
+		lblProjectName.setHorizontalAlignment(SwingConstants.CENTER);
+		lblProjectName.setFont(new Font("Felix Titling", Font.BOLD, 25));
+		lblProjectName.setBounds(0, 11, 879, 53);
+		contentPane.add(lblProjectName);
+		
+		JLabel lblREADME = new JLabel("Conteúdo do ficheiro README:");
+		lblREADME.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblREADME.setBounds(10, 421, 300, 30);
+		contentPane.add(lblREADME);
+
+		JScrollPane scrollPaneREADME = new JScrollPane();
+		scrollPaneREADME.setViewportBorder(null);
+		scrollPaneREADME.setBounds(20, 462, 324, 179);
+		contentPane.add(scrollPaneREADME);
+
+
+
+		try {
+			JTextArea jTextREADME = new JTextArea(getREADME());
+			jTextREADME.setEditable(false);
+			scrollPaneREADME.setViewportView(jTextREADME);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		
-
+		JLabel lblLinksTexts = new JLabel("Links para os textos das reuniões:");
+		lblLinksTexts.setLabelFor(scrollPaneLinksTexts);
+		lblLinksTexts.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblLinksTexts.setBounds(20, 226, 334, 28);
+		contentPane2.add(lblLinksTexts);
+		
+		JScrollPane scrollPaneOriginaArtefactos = new JScrollPane();
+		scrollPaneOriginaArtefactos.setViewportBorder(null);
+		scrollPaneOriginaArtefactos.setBounds(480, 50, 389, 165);
+		contentPane2.add(scrollPaneOriginaArtefactos);
+		
+		JTextArea jTextOriginaArtefactos = new JTextArea(getActivitiesHoursCost());
+		jTextOriginaArtefactos.setEditable(false);
+		scrollPaneOriginaArtefactos.setViewportView(jTextOriginaArtefactos);
+		
+		JScrollPane scrollPaneNaoOriginaArtefactos = new JScrollPane();
+		scrollPaneNaoOriginaArtefactos.setViewportBorder(null);
+		scrollPaneNaoOriginaArtefactos.setBounds(480, 265, 389, 165);
+		contentPane2.add(scrollPaneNaoOriginaArtefactos);
+		
+		JTextArea jTextNaoOriginaArtefactos = new JTextArea(notgetActivitiesHoursCost());
+		jTextNaoOriginaArtefactos.setEditable(false);
+		scrollPaneNaoOriginaArtefactos.setViewportView(jTextNaoOriginaArtefactos);
+		
+		JLabel lblNaoOriginaArtefactos = new JLabel("Atividades que não geraram artefactos:");
+		lblNaoOriginaArtefactos.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblNaoOriginaArtefactos.setBounds(465, 226, 389, 28);
+		contentPane2.add(lblNaoOriginaArtefactos);
+		
+		JLabel lblOriginaArtefactos = new JLabel("Atividades que geraram artefactos:");
+		lblOriginaArtefactos.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblOriginaArtefactos.setBounds(465, 11, 334, 28);
+		contentPane2.add(lblOriginaArtefactos);
+		
+		JLabel lblCommitsList = new JLabel("Lista de Commits:");
+		lblCommitsList.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblCommitsList.setBounds(20, 441, 334, 28);
+		contentPane2.add(lblCommitsList);
+		
+		JScrollPane scrollPaneCommitsList = new JScrollPane();
+		scrollPaneCommitsList.setBounds(30, 480, 389, 165);
+		contentPane2.add(scrollPaneCommitsList);
+		
+		JTextArea jTextCommitsList = new JTextArea((String) null);
+		scrollPaneCommitsList.setViewportView(jTextCommitsList);
+		
+		JScrollPane scrollPaneTagList = new JScrollPane();
+		scrollPaneTagList.setBounds(480, 480, 389, 165);
+		contentPane2.add(scrollPaneTagList);
+		
+		JTextArea jTextTagList = new JTextArea((String) null);
+		scrollPaneTagList.setViewportView(jTextTagList);
+		
+		JLabel lblTagList = new JLabel("Lista de Tags:");
+		lblTagList.setFont(new Font("Tahoma", Font.BOLD, 18));
+		lblTagList.setBounds(465, 441, 334, 28);
+		contentPane2.add(lblTagList);
+		
+		
 	}
 
+	private String getNameofProject() {
+
+		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
+		Organization organization = trelloApi.getBoardOrganization(boards.get(0).getId());
+		String name = organization.getDisplayName();
+		return name;
+	}
+
+	/**
+	 * Se o parametro por diferente do valor a se pagar por hora (custoHora) então
+	 * Altera o valor a se pagar por hora e atualiza a tabela "tabelaCusto" com os
+	 * novos custos
+	 * 
+	 * @param novoCustoHora Representa o novo valor a se pagar por Hora
+	 */
 	private void setNovoCustoHora(double novoCustoHora) {
+		if (novoCustoHora == custoHora)
+			return;
 		int row = 0;
 		while (row < tabelaCusto.getRowCount()) {
 			double newValue = ((Number) tabelaCusto.getValueAt(row, 2)).doubleValue() * (novoCustoHora / custoHora);
@@ -174,17 +348,28 @@ public class Informacao extends JFrame {
 		custoHora = novoCustoHora;
 	}
 
+	/**
+	 * Dá return de uma String que contém todos os membros do projeto separados por
+	 * \n
+	 * 
+	 * @return String
+	 */
 	private String getMembers() {
 
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		List<Member> members = trelloApi.getBoardMembers(boards.get(0).getId());
-		String membersList = "";
+		StringBuffer membersList = new StringBuffer();
 		for (Member m : members) {
-			membersList = membersList + m.getFullName() + "\n";
+			membersList.append(m.getFullName() + "\n");
 		}
-		return membersList;
+		return membersList.toString();
 	}
 
+	/**
+	 * Este método dá return da data de fim do projeto
+	 * 
+	 * @return String
+	 */
 	private String getDate() {
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		List<Card> cards = trelloApi.getBoardCards(boards.get(0).getId());
@@ -193,26 +378,47 @@ public class Informacao extends JFrame {
 		return dataInicio.toString();
 	}
 
-	private String getProductBacklog() {
+	private String getSprintsDuration() {
+		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
+		List<TList> lists = trelloApi.getBoardLists(boards.get(0).getId());
+		List<Card> listCards = trelloApi.getListCards(lists.get(1).getId());
+		StringBuffer sprintsduration = new StringBuffer();
+		for (Card c : listCards) {
+			sprintsduration.append(c.getName() + ": " + c.getDue() + "\n");
+		}
+		return sprintsduration.toString();
+	}
 
-		String productBacklogList = "";
+	/**
+	 * Este método dá return de uma String o Product Backlog
+	 * 
+	 * @return String
+	 */
+	private String getProductBacklog() {
+		StringBuffer productBacklogList = new StringBuffer();
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		for (Board b : boards) {
+			productBacklogList.append(b.getName() + ":" + "\n");
 			List<TList> lists = trelloApi.getBoardLists(b.getId());
 			for (TList l : lists) {
-
 				if (!l.getName().contains("Planning") && !l.getName().contains("Review")
-						&& !l.getName().contains("Retrospective") && !l.getName().contains("Scrum")) {
+						&& !l.getName().contains("Retrospective") && !l.getName().contains("Scrum")
+						&& !l.getName().contains("Project") && !l.getName().contains("Sprints")
+						&& !l.getName().contains("Product Backlog")) {
 					List<Card> listCards = trelloApi.getListCards(l.getId());
 					for (Card c : listCards) {
-						productBacklogList += c.getName() + "\n";
+						productBacklogList.append("-" + c.getName() + "\n");
 					}
 				}
 			}
 		}
-		return productBacklogList;
+		return productBacklogList.toString();
 	}
 
+	/**
+	 * Vai ao trello e obtém as horas estimadas e utilizadas de cada membro por
+	 * sprint Armazenando-as numa lista de SprintHours
+	 */
 	private void getProjectTime() {
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 		for (Board b : boards) {
@@ -225,7 +431,7 @@ public class Informacao extends JFrame {
 				control1++;
 			}
 			if (sHours.size() == control1) {
-				sHours.add(new SprintHours(boardName));
+				sHours.add(new SprintHoursInformation(boardName));
 			}
 			List<TList> lists = trelloApi.getBoardLists(b.getId());
 			for (TList l : lists) {
@@ -241,33 +447,37 @@ public class Informacao extends JFrame {
 									String[] user = dataText[1].split("@");
 									String[] doubles = dataText[2].split("/");
 									int control = 0;
-									while (control < sHours.get(control1).getHours().size()) {
-										if (sHours.get(control1).getHours().get(control).getUser().equals(user[1])) {
+									while (control < sHours.get(control1).getMemberHoursInformationList().size()) {
+										if (sHours.get(control1).getMemberHoursInformationList().get(control).getUser()
+												.equals(user[1])) {
 											break;
 										}
 										control++;
 									}
-									if (sHours.get(control1).getHours().size() == control) {
-										sHours.get(control1).getHours().add(new Hours(user[1]));
+									if (sHours.get(control1).getMemberHoursInformationList().size() == control) {
+										sHours.get(control1).getMemberHoursInformationList()
+										.add(new MemberHoursInformation(user[1]));
 									}
-									sHours.get(control1).getHours().get(control).addTime(Double.parseDouble(doubles[0]),
-											Double.parseDouble(doubles[1]));
+									sHours.get(control1).getMemberHoursInformationList().get(control)
+									.addTime(Double.parseDouble(doubles[0]), Double.parseDouble(doubles[1]));
 								} else {
 									String user = trelloApi.getActionMemberCreator(a.getId()).getUsername();
 									String[] doubles = dataText[1].split("/");
 
 									int control = 0;
-									while (control < sHours.get(control1).getHours().size()) {
-										if (sHours.get(control1).getHours().get(control).getUser().equals(user)) {
+									while (control < sHours.get(control1).getMemberHoursInformationList().size()) {
+										if (sHours.get(control1).getMemberHoursInformationList().get(control).getUser()
+												.equals(user)) {
 											break;
 										}
 										control++;
 									}
-									if (sHours.get(control1).getHours().size() == control) {
-										sHours.get(control1).getHours().add(new Hours(user));
+									if (sHours.get(control1).getMemberHoursInformationList().size() == control) {
+										sHours.get(control1).getMemberHoursInformationList()
+										.add(new MemberHoursInformation(user));
 									}
-									sHours.get(control1).getHours().get(control).addTime(Double.parseDouble(doubles[0]),
-											Double.parseDouble(doubles[1]));
+									sHours.get(control1).getMemberHoursInformationList().get(control)
+									.addTime(Double.parseDouble(doubles[0]), Double.parseDouble(doubles[1]));
 								}
 							}
 						}
@@ -276,33 +486,283 @@ public class Informacao extends JFrame {
 			}
 		}
 	}
+	String AttachmentsList = "";
+	private String getAttachList() throws IOException {
 
+		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
+
+		for(Board b: boards) {
+			List<Card> cards= trelloApi.getBoardCards(b.getId());
+			for(Card c : cards) {
+				List<Attachment> listAttach = trelloApi.getCardAttachments(c.getId());
+				for(Attachment a: listAttach) {
+					if(a.getUrl().contains("Sprint"))
+						AttachmentsList = AttachmentsList + a.getUrl()+"\n";
+
+				}
+			}
+		}
+
+
+		return AttachmentsList;
+	}
+
+
+
+	private String getActivitiesHoursCost() {
+		List<Card> lista = new ArrayList<Card>();
+		List<String[]> listauserartifactos = new ArrayList<String[]>();
+		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
+		for (Board b : boards) {
+			List<Card> cards = b.fetchCards();
+			for (Card c : cards) {
+				List<Label> labels = c.getLabels();
+				for (Label l : labels) {
+					if (l.getColor().equals("purple")) {
+						lista.add(c);
+						List<Member> listamembros = trelloApi.getCardMembers(c.getId());
+						for (Member m : listamembros) {
+							int control = 0;
+							while (control < listauserartifactos.size()) {
+								if (listauserartifactos.get(control)[0].equals(m.getUsername())) {
+									int tempo = Integer.parseInt(listauserartifactos.get(control)[1]);
+									tempo++;
+									listauserartifactos.get(control)[1] = String.valueOf(tempo);
+									break;
+								}
+								control++;
+							}
+							if (control == listauserartifactos.size()) {
+								String[] vetor = { m.getUsername(), "1" };
+								listauserartifactos.add(vetor);
+							}
+
+						}
+
+					}
+				}
+			}
+		}
+		
+		
+		
+
+		List<MemberHoursInformation> listamemberhours = new ArrayList<MemberHoursInformation>();
+		for (Card card : lista) {
+			List<Action> listaacoes = trelloApi.getCardActions(card.getId());
+			for (Action a : listaacoes) {
+				if (a.getType().matches("commentCard")) {
+					if (a.getData().getText().contains("plus!")) {
+						String[] dataText = a.getData().getText().split(" ");
+						if (dataText[1].contains("@")) {
+							String[] user = dataText[1].split("@");
+							String[] doubles = dataText[2].split("/");
+							int control = 0;
+							while (control < listamemberhours.size()) {
+								if (listamemberhours.get(control).getUser().equals(user[1])) {
+									break;
+
+								}
+								control++;
+							}
+							if (listamemberhours.size() == control) {
+
+								listamemberhours.add(new MemberHoursInformation(user[1]));
+							}
+							listamemberhours.get(control).addTime(Double.parseDouble(doubles[0]),
+									Double.parseDouble(doubles[1]));
+						} else {
+							String user = trelloApi.getActionMemberCreator(a.getId()).getUsername();
+							String[] doubles = dataText[1].split("/");
+							int control = 0;
+							while (control < listamemberhours.size()) {
+								if (listamemberhours.get(control).getUser().equals(user)) {
+									break;
+								}
+								control++;
+							}
+							if (listamemberhours.size() == control) {
+								listamemberhours.add(new MemberHoursInformation(user));
+							}
+							listamemberhours.get(control).addTime(Double.parseDouble(doubles[0]),
+									Double.parseDouble(doubles[1]));
+						}
+					}
+				}
+			}
+		}
+		StringBuffer info = new StringBuffer();
+		int spentTime = 0;
+		for (MemberHoursInformation m : listamemberhours) {
+			for (String[] s : listauserartifactos) {
+				if (m.getUser().equals(s[0])) {
+					info.append("->O utilizador " + m.getUser() + " originou " + s[1]
+							+ " artifactos no repositório \ne gastou " + m.getSpentTime() + " horas "
+							+ " o que dá um custo total de: " + m.getSpentTime() * custoHora + " euros\n");
+					spentTime += m.getSpentTime();
+					break;
+				}
+
+			}
+
+		}
+		String retorno = "->Neste projeto foram originados " + lista.size() + " artifactos, \ngastando-se " + spentTime
+				+ " horas, o que dá um custo total de: " + spentTime * custoHora + " euros\n" + info.toString();
+		return retorno;
+	}
+	
+	
+	private String notgetActivitiesHoursCost() {
+		List<Card> lista = new ArrayList<Card>();
+		List<String[]> listauserartifactos = new ArrayList<String[]>();
+		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
+		for (Board b : boards) {
+			List<Card> cards = b.fetchCards();
+			for (Card c : cards) {
+				List<Label> labels = c.getLabels();
+				for (Label l : labels) {
+					if (l.getColor().equals("blue")) {
+						lista.add(c);
+						List<Member> listamembros = trelloApi.getCardMembers(c.getId());
+						for (Member m : listamembros) {
+							int control = 0;
+							while (control < listauserartifactos.size()) {
+								if (listauserartifactos.get(control)[0].equals(m.getUsername())) {
+									int tempo = Integer.parseInt(listauserartifactos.get(control)[1]);
+									tempo++;
+									listauserartifactos.get(control)[1] = String.valueOf(tempo);
+									break;
+								}
+								control++;
+							}
+							if (control == listauserartifactos.size()) {
+								String[] vetor = { m.getUsername(), "1" };
+								listauserartifactos.add(vetor);
+							}
+
+						}
+
+					}
+				}
+			}
+		}
+		
+		
+		
+
+		List<MemberHoursInformation> listamemberhours = new ArrayList<MemberHoursInformation>();
+		for (Card card : lista) {
+			List<Action> listaacoes = trelloApi.getCardActions(card.getId());
+			for (Action a : listaacoes) {
+				if (a.getType().matches("commentCard")) {
+					if (a.getData().getText().contains("plus!")) {
+						String[] dataText = a.getData().getText().split(" ");
+						if (dataText[1].contains("@")) {
+							String[] user = dataText[1].split("@");
+							String[] doubles = dataText[2].split("/");
+							int control = 0;
+							while (control < listamemberhours.size()) {
+								if (listamemberhours.get(control).getUser().equals(user[1])) {
+									break;
+
+								}
+								control++;
+							}
+							if (listamemberhours.size() == control) {
+
+								listamemberhours.add(new MemberHoursInformation(user[1]));
+							}
+							listamemberhours.get(control).addTime(Double.parseDouble(doubles[0]),
+									Double.parseDouble(doubles[1]));
+						} else {
+							String user = trelloApi.getActionMemberCreator(a.getId()).getUsername();
+							String[] doubles = dataText[1].split("/");
+							int control = 0;
+							while (control < listamemberhours.size()) {
+								if (listamemberhours.get(control).getUser().equals(user)) {
+									break;
+								}
+								control++;
+							}
+							if (listamemberhours.size() == control) {
+								listamemberhours.add(new MemberHoursInformation(user));
+							}
+							listamemberhours.get(control).addTime(Double.parseDouble(doubles[0]),
+									Double.parseDouble(doubles[1]));
+						}
+					}
+				}
+			}
+		}
+		StringBuffer info = new StringBuffer();
+		int spentTime = 0;
+		for (MemberHoursInformation m : listamemberhours) {
+			for (String[] s : listauserartifactos) {
+				if (m.getUser().equals(s[0])) {
+					info.append("->O utilizador " + m.getUser() + " originou " + s[1]
+							+ " atividades que não deram origem a artifactos no repositório \ne gastou " + m.getSpentTime() + " horas "
+							+ " o que dá um custo total de: " + m.getSpentTime() * custoHora + " euros\n");
+					spentTime += m.getSpentTime();
+					break;
+				}
+
+			}
+
+		}
+		String retorno = "->Neste projeto foram originadas " + lista.size() +  " atividades que não deram origem a artifactos, \ngastando-se " + spentTime
+				+ " horas, o que dá um custo total de: " + spentTime * custoHora + " euros\n" + info.toString();
+		return retorno;
+	}
+
+	/**
+	 * Dá return da conexao ao Trello
+	 * 
+	 * @return Trello
+	 */
 	public Trello getTrelloApi() {
 		return trelloApi;
 	}
 
+	/**
+	 * Dá return de uma String que representa o user no trello do Utilizador
+	 * 
+	 * @return String
+	 */
 	public String getTrelloUtilizador() {
 		return trelloUtilizador;
 	}
 
-	public List<SprintHours> getSprintHours() {
+	/**
+	 * Dá return da lista de SprintHours
+	 * 
+	 * @return List<SprintHours>
+	 */
+	public List<SprintHoursInformation> getSprintHours() {
 		return sHours;
 	}
 
-	private JTable CriarTabela(List<SprintHours> sprintHoursList) {
+	/**
+	 * Cria uma tabela do tipo JTable com as horas previstas e utilizadas por membro
+	 * da equipe e por sprint e as horas previstas e utilizadas do projeto
+	 * 
+	 * @param sprintHoursList Representa uma lista de SprintHours
+	 * 
+	 * @return JTable
+	 */
+	private JTable CriarTabela(List<SprintHoursInformation> sprintHoursList) {
 		String[] colunas = { "Sprint", "User", "Horas previstas", "Horas usadas" };
 		int numberOfLines = 0;
-		for (SprintHours sH : sprintHoursList) {
+		for (SprintHoursInformation sH : sprintHoursList) {
 			if (sH.hasSpentTime())
-				numberOfLines += sH.getHours().size();
+				numberOfLines += sH.getMemberHoursInformationList().size();
 		}
 		Object[][] dados = new Object[numberOfLines + 1][4];
 		int line = 1;
 		double estimate = 0;
 		double spent = 0;
-		for (SprintHours sH : sprintHoursList) {
+		for (SprintHoursInformation sH : sprintHoursList) {
 			if (sH.hasSpentTime()) {
-				for (Hours h : sH.getHours()) {
+				for (MemberHoursInformation h : sH.getMemberHoursInformationList()) {
 					dados[line][0] = sH.getSprint();
 					dados[line][1] = h.getUser();
 					dados[line][2] = h.getEstimateTime();
@@ -324,20 +784,29 @@ public class Informacao extends JFrame {
 		return tabela;
 	}
 
-	private JTable criarTabela(List<SprintHours> sprintHoursList, double custoHora) {
+	/**
+	 * Cria uma tabela do tipo JTable com os pagamentos por membro de equipe e por
+	 * sprint e custo total do projeto
+	 * 
+	 * @param sprintHoursList Representa uma lista de SprintHours
+	 * @param custoHora       Representa o valor a pagar por hora
+	 * 
+	 * @return JTable
+	 */
+	private JTable criarTabela(List<SprintHoursInformation> sprintHoursList, double custoHora) {
 		String[] colunas = { "Sprint", "User", "Pagamento" };
 
 		int numberOfLines = 0;
-		for (SprintHours sH : sprintHoursList) {
+		for (SprintHoursInformation sH : sprintHoursList) {
 			if (sH.hasSpentTime())
-				numberOfLines += sH.getHours().size();
+				numberOfLines += sH.getMemberHoursInformationList().size();
 		}
 		Object[][] dados = new Object[numberOfLines + 1][3];
 		int line = 1;
 		double custo = 0;
-		for (SprintHours sH : sprintHoursList) {
+		for (SprintHoursInformation sH : sprintHoursList) {
 			if (sH.hasSpentTime()) {
-				for (Hours h : sH.getHours()) {
+				for (MemberHoursInformation h : sH.getMemberHoursInformationList()) {
 					dados[line][0] = sH.getSprint();
 					dados[line][1] = h.getUser();
 					dados[line][2] = h.getSpentTime() * custoHora;
@@ -353,5 +822,51 @@ public class Informacao extends JFrame {
 		JTable tabela = new JTable(dados, colunas);
 		tabela.setBackground(UIManager.getColor("Button.light"));
 		return tabela;
+
+	}
+
+	/**
+	 * Este método dá return do conteúdo no ficheiro README.md
+	 * presente na branch 'main' do repositório GitHub
+	 * 
+	 * @return String
+	 */
+
+	private String getREADME() throws IOException, URISyntaxException {
+
+		StringBuffer readMEContent = new StringBuffer();
+
+		/*
+		 * Call GitHub REST API - https://developer.github.com/v3/repos/contents/
+		 * 
+		 * Using Spring's RestTemplate to simplify REST call. Any other REST client
+		 * library can be used here.
+		 */
+		RestTemplate restTemplate = new RestTemplate();
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		List<Map> response = restTemplate.getForObject(
+				"https://api.github.com/repos/{owner}/{repo}/contents?ref={branch}", List.class, repositoryOwner,
+				repositoryName, "main");
+
+		// Iterate through list of file metadata from response.
+		for (@SuppressWarnings("rawtypes") Map fileMetaData : response) {
+
+			// Get file name & raw file download URL from response.
+			String downloadUrl = (String) fileMetaData.get("download_url");
+
+			// We will only fetch read me file for this example.
+			if (downloadUrl != null && downloadUrl.contains("README")) {
+				/*
+				 * Get file content as string
+				 * 
+				 * Using Apache commons IO to read content from the remote URL. Any other HTTP
+				 * client library can be used here.
+				 */
+				String fileContent = IOUtils.toString(new URI(downloadUrl), Charset.defaultCharset());
+				readMEContent.append(fileContent);
+			}
+
+		}
+		return readMEContent.toString();
 	}
 }
