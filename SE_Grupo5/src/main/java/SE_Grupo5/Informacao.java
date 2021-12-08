@@ -885,8 +885,18 @@ public class Informacao extends JFrame {
 		}
 		return readMEContent.toString();
 	}
-
-	public void witeToCSV(String membros, JTable horas, JTable custo, String geraram, String naoGeraram,
+	
+	/**
+	 * Cria um ficheiro Informacao.csv com a informacao relativa a cada membro
+	 * 
+	 * @param membros
+	 * @param horas
+	 * @param custo
+	 * @param geraram
+	 * @param naoGeraram       
+	 * 
+	 */
+	private void witeToCSV(String membros, JTable horas, JTable custo, String geraram, String naoGeraram,
 			String commits) {
 
 		StringBuffer buffer = new StringBuffer();
