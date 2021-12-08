@@ -5,9 +5,14 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.commons.io.IOUtils;
+import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHContent;
 import org.kohsuke.github.GHRepository;
+
 import org.kohsuke.github.GHTag;
+
+import org.kohsuke.github.GHUser;
+
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.PagedIterable;
 
@@ -66,6 +71,7 @@ public class Informacao extends JFrame {
 	/**
 	 * Create the frame.
 	 * 
+<<<<<<< HEAD
 	 * @throws IOException
 	 * 
 	 * @param trelloApi        Representa a conexão ao trello
@@ -73,6 +79,13 @@ public class Informacao extends JFrame {
 	 * @param gitHubApi        Representa a conexão ao GitHub
 	 * @param repositoryOwner  Representa o nome do dono do repositório GitHub
 	 * @param repositoryName   Representa o nome do repositório GitHub
+=======
+	 * @param trelloApi        	Representa a conexão ao trello
+	 * @param trelloUtilizador 	Representa o user no trello do Utilizador
+	 * @param gitHubApi			Representa a conexão ao GitHub 
+	 * @param repositoryOwner	Representa o nome do dono do repositório GitHub
+	 * @param repositoryName	Representa o nome do repositório GitHub	 
+>>>>>>> branch 'main' of https://github.com/rmrss11-iscte/ES-LETI-1Sem-2021-Grupo5.git
 	 */
 
 	public Informacao(Trello trelloApi, String trelloUtilizador, GitHub gitHubApi, String repositoryOwner,
@@ -294,7 +307,8 @@ public class Informacao extends JFrame {
 		scrollPaneCommitsList.setBounds(30, 480, 389, 165);
 		contentPane2.add(scrollPaneCommitsList);
 
-		JTextArea jTextCommitsList = new JTextArea((String) null);
+		
+		JTextArea jTextCommitsList = new JTextArea(commitsbydate());
 		scrollPaneCommitsList.setViewportView(jTextCommitsList);
 
 		JScrollPane scrollPaneTagList = new JScrollPane();
@@ -860,6 +874,7 @@ public class Informacao extends JFrame {
 		return readMEContent.toString();
 	}
 	
+
 	/**
 	 * Este método dá return de uma String com o nome das tags no branchMaster,
 	 * bem como a data em que foram criadas
@@ -879,6 +894,42 @@ public class Informacao extends JFrame {
 			e.printStackTrace();
 		}
 		return tagList.toString();
+	}
+
+
+	private String commitsbydate() {
+		//		BString last="";
+		StringBuffer last = new StringBuffer();
+
+		try {
+			String path = repositoryOwner+"/"+repositoryName;
+	
+			GHRepository repositorio = gitHubApi.getRepository(path);
+			PagedIterable<GHCommit> commit =  repositorio.listCommits();
+			
+
+		
+				for(GHCommit cc: commit) {
+				
+					GHUser committer = cc.getCommitter();
+
+					if( committer != null) {
+
+						String name = committer.getName();
+						String commitDate = cc.getCommitDate().toString();
+						String commitname = cc.getCommitShortInfo().getMessage();
+						last.append("commiter: " + name + " commited at: " + commitDate  + " commit name: " + commitname + "\n" );
+					}
+				}
+			
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  System.out.print(last);
+		return last.toString();
+
+
 	}
 
 }
