@@ -69,7 +69,7 @@ public class Informacao extends JFrame {
 
 	/**
 	 * Create the frame.
-	 * @throws IOException
+	 * @throws IOException 
 	 * 
 	 * @param trelloApi        	Representa a conexão ao trello
 	 * @param trelloUtilizador 	Representa o user no trello do Utilizador
@@ -322,6 +322,11 @@ public class Informacao extends JFrame {
 
 	}
 
+	/**
+     * Dá return de uma String que representa o nome do projeto no Trello
+     * 
+     * @return String
+     */
 	private String getNameofProject() {
 
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
@@ -481,11 +486,16 @@ public class Informacao extends JFrame {
 			}
 		}
 	}
-
-	String AttachmentsList = "";
+	
+	/**
+     * Dá return de uma String que representa os links aos quais estão associados os textos 
+     * resultantes das reuniões
+     * 
+     * @return String
+     */
 
 	private String getAttachList() throws IOException {
-
+	String AttachmentsList = "";
 		List<Board> boards = trelloApi.getMemberBoards(trelloUtilizador);
 
 		for (Board b : boards) {
@@ -614,6 +624,15 @@ public class Informacao extends JFrame {
 				+ " horas, o que dá um custo total de: " + spentTime * custoHora + " euros\n" + info.toString();
 		return retorno;
 	}
+
+
+	
+	/**
+     * Dá return de uma String que representa as atividadedes que não deram origem
+     * a artifactos
+     * 
+     * @return String
+     */
 
 	private String notgetActivitiesHoursCost() {
 		List<Card> lista = new ArrayList<Card>();
@@ -969,6 +988,14 @@ public class Informacao extends JFrame {
 			e.printStackTrace();
 		}
 	}
+
+
+     * Dá return de uma String que representa os links aos quais estão associados os textos 
+     * resultantes das reuniões
+     * 
+     * @return String
+     */
+	
 
 	private String commitsbydate() {
 		StringBuffer last = new StringBuffer();

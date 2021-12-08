@@ -12,7 +12,7 @@ import com.julienvey.trello.impl.http.ApacheHttpClient;
 
 import junit.framework.TestCase;
 
-public class conexaoTest extends TestCase {
+public class ConexaoTest extends TestCase {
 	
 	@Test
 	public void testConexaoTrello() {
