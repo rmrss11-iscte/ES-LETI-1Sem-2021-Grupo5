@@ -6,3 +6,5 @@ André Barroso - 92552;
 André Pereira - 93252;
 Luís Figueira - 82146;
 Ricardo Rodrigues - 82993;
+
+Na realização deste projeto deparámo-nos com algumas dificuldades. Uma delas foi o facto de não conseguirmos obter nenhuma data de inicio pedida
