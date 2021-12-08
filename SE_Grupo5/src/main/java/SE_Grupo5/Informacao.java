@@ -16,8 +16,10 @@ import com.julienvey.trello.domain.*;
 
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Date;
@@ -106,7 +108,7 @@ public class Informacao extends JFrame {
 		lblMembers.setBounds(10, 62, 200, 43);
 		contentPane.add(lblMembers);
 
-		JTextArea jTextMembers = new JTextArea(getMembers());
+		final JTextArea jTextMembers = new JTextArea(getMembers());
 		lblMembers.setLabelFor(jTextMembers);
 		jTextMembers.setEditable(false);
 		jTextMembers.setBounds(20, 105, 232, 91);
@@ -260,7 +262,7 @@ public class Informacao extends JFrame {
 		scrollPaneOriginaArtefactos.setBounds(480, 50, 389, 165);
 		contentPane2.add(scrollPaneOriginaArtefactos);
 
-		JTextArea jTextOriginaArtefactos = new JTextArea(getActivitiesHoursCost());
+		final JTextArea jTextOriginaArtefactos = new JTextArea(getActivitiesHoursCost());
 		jTextOriginaArtefactos.setEditable(false);
 		scrollPaneOriginaArtefactos.setViewportView(jTextOriginaArtefactos);
 
@@ -269,7 +271,7 @@ public class Informacao extends JFrame {
 		scrollPaneNaoOriginaArtefactos.setBounds(480, 265, 389, 165);
 		contentPane2.add(scrollPaneNaoOriginaArtefactos);
 
-		JTextArea jTextNaoOriginaArtefactos = new JTextArea(notgetActivitiesHoursCost());
+		final JTextArea jTextNaoOriginaArtefactos = new JTextArea(notgetActivitiesHoursCost());
 		jTextNaoOriginaArtefactos.setEditable(false);
 		scrollPaneNaoOriginaArtefactos.setViewportView(jTextNaoOriginaArtefactos);
 
@@ -292,7 +294,7 @@ public class Informacao extends JFrame {
 		scrollPaneCommitsList.setBounds(30, 480, 389, 165);
 		contentPane2.add(scrollPaneCommitsList);
 
-		JTextArea jTextCommitsList = new JTextArea(commitsbydate());
+		final JTextArea jTextCommitsList = new JTextArea(commitsbydate());
 		scrollPaneCommitsList.setViewportView(jTextCommitsList);
 
 		JScrollPane scrollPaneTagList = new JScrollPane();
@@ -307,8 +309,17 @@ public class Informacao extends JFrame {
 		lblTagList.setBounds(465, 441, 334, 28);
 		contentPane2.add(lblTagList);
 
-		witeToCSV(jTextMembers.getText(), tabelaHoras, tabelaCusto, jTextOriginaArtefactos.getText(),
-				jTextNaoOriginaArtefactos.getText(), "commits");
+		JButton btnNewButton = new JButton("Get .CSV File");
+		btnNewButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				witeToCSV(jTextMembers.getText(), tabelaHoras, tabelaCusto, jTextOriginaArtefactos.getText(),
+						jTextNaoOriginaArtefactos.getText(), jTextCommitsList.getText());
+			}
+		});
+		btnNewButton.setFont(new Font("Tahoma", Font.BOLD, 11));
+		btnNewButton.setBounds(422, 544, 139, 97);
+		contentPane.add(btnNewButton);
 
 	}
 
@@ -879,6 +890,7 @@ public class Informacao extends JFrame {
 			String commits) {
 
 		StringBuffer buffer = new StringBuffer();
+		buffer.append("Membro;Horas Estimadas;Horas Usadas;Custo;nr de atividades que geraram artefactos;nr de atividades que não geraram artefactos;Commits;\n");
 		String[] members = membros.split("\n");
 		for (String m : members) {
 			buffer.append(m + ";");
@@ -922,13 +934,27 @@ public class Informacao extends JFrame {
 					nrAtv2 = temp[0];
 				}
 			}
-			buffer.append(nrAtv2 + ";\n");
+			buffer.append(nrAtv2 + ";");
 
+			String[] text = commits.split("\n");
+			for (String string : text) {
+				String[] temp = string.split("commiter: ");
+				if (temp.length > 1) {
+					String[] commitMember = temp[1].split(" commited at: ");
+					if (commitMember[0].equals(m)) {
+						String[] commitMsg = commitMember[1].split(" commit name: ");
+						buffer.append(commitMsg[1] + ";");
+					}
+				}
+			}
+			buffer.append("\n");
 		}
 
 		try {
-			FileWriter writer = new FileWriter("Information.csv");
-			writer.write(buffer.toString());
+			File file = new File("Information.csv");
+			if(!file.exists())file.createNewFile();
+			PrintWriter writer = new PrintWriter(file);
+			writer.print(buffer.toString());
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -936,7 +962,6 @@ public class Informacao extends JFrame {
 	}
 
 	private String commitsbydate() {
-		// BString last="";
 		StringBuffer last = new StringBuffer();
 
 		try {
@@ -960,10 +985,8 @@ public class Informacao extends JFrame {
 			}
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.print(last);
 		return last.toString();
 
 	}
