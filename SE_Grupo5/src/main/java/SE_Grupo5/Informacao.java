@@ -69,7 +69,7 @@ public class Informacao extends JFrame {
 
 	/**
 	 * Create the frame.
-	 * @throws IOException 
+	 * @throws IOException
 	 * 
 	 * @param trelloApi        	Representa a conexão ao trello
 	 * @param trelloUtilizador 	Representa o user no trello do Utilizador
